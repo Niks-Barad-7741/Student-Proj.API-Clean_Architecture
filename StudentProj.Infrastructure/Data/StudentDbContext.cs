@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StudentProj.Models;
+using StudentProj.Core.Entities;
 using System.Data;
 
 namespace StudentProj.Data
