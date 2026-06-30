@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace StudentProj.Models
+namespace StudentProj.Core.Entities 
 {
     public class Permissions
     {

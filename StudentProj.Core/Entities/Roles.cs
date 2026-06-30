@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.Text.Json.Serialization;
 
-namespace StudentProj.Models
+namespace StudentProj.Core.Entities
 {
     public class Roles
     {

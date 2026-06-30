@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace StudentProj.Models
+namespace StudentProj.Core.Entities
 {
     public class Logs
     {
