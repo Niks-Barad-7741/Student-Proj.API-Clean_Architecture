@@ -1,12 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace StudentProj.Application.DTO
 {
-    internal class StudentDTO
+    public class StudentDTO
     {
+        [Required]
+        [StringLength(50, MinimumLength = 3)]
+
+        public string Name { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [StringLength(50)]
+
+        public string Email { get; set; }
+
+        [Required]
+        [StringLength(200)]
+        public string Address { get; set; }
+
+        [Required]
+        [StringLength(10, MinimumLength = 10)]
+        [Phone]
+        public string Phone { get; set; }
+
+
     }
 }

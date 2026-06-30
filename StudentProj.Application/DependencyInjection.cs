@@ -1,9 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StudentProj.Application
 {
@@ -11,6 +6,8 @@ namespace StudentProj.Application
     {
         public static IServiceCollection AddApplicationDI(this IServiceCollection services) 
         {
+
+            services.AddAutoMapper(cfg => cfg.AddProfile<StudentProj.Application.Mapper.MappingProfile>());
             return services;
         }
     }

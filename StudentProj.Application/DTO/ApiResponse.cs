@@ -1,4 +1,4 @@
-﻿using StudentProj.Enums;
+﻿using StudentProj.Core.Enums;
 using StudentProj.Application.DTO;
 
 namespace StudentProj.DTO
