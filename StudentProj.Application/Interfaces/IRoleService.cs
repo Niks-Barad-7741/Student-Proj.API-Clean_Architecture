@@ -2,7 +2,7 @@
 
 namespace StudentProj.Application.Interfaces
 {
-    public interface IRoleServce
+    public interface IRoleService
     {
         Task<List<RoleDTO>> GetAllRolesAsync();
         Task<RoleDTO> GetRoleByIdAsync(int id);
