@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +8,7 @@ namespace StudentProj.Application.DTO
 {
     public class PermissionDTO
     {
+        public int Id { get; set; }
         public string PermissionName { get; set; }
     }
 }
