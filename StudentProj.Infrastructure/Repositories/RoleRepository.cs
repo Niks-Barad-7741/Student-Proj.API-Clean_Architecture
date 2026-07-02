@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using StudentProj.Core.Entities;
 using StudentProj.Core.Interface;
 using StudentProj.Data;
+using StudentProj.Core.Common;
 
 namespace StudentProj.Infrastructure.Repositories
 {
@@ -74,7 +75,7 @@ namespace StudentProj.Infrastructure.Repositories
             if (role == null) return false;
 
             role.IsDeleted = true;
-            role.DeletedAt = DateTime.Now;
+            role.DeletedAt = DateTimeHelper.GetIndianStandardTime();
             _dbcontext.Roles.Update(role);
             await _dbcontext.SaveChangesAsync();
 

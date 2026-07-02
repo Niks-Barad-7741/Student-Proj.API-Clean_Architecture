@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using StudentProj.Core.Common;
 using StudentProj.Core.Entities;
 using StudentProj.Core.Interface;
@@ -16,6 +16,17 @@ namespace StudentProj.Infrastructure.Repositories
         public async Task<int> Createstudentasync(Student student)
         {
             await _context.Student.AddAsync(student);
+            
+            var userRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "User" && !r.IsDeleted);
+            if (userRole != null)
+            {
+                await _context.StudentRoles.AddAsync(new StudentRoles
+                {
+                    Student = student,
+                    RoleId = userRole.Id
+                });
+            }
+
             await _context.SaveChangesAsync();
             return student.Id;
         }
@@ -86,6 +97,9 @@ namespace StudentProj.Infrastructure.Repositories
 
         public async Task<bool> UpdateStudentasync(int id, Student student)
         {
+            // If the student is already tracked (e.g. fetched by the service), we just need to save changes.
+            // Using .Update() on an already tracked entity is usually fine in EF Core, but if it causes issues,
+            // we can just call SaveChanges. We'll use Update to be safe if it's untracked.
             _context.Student.Update(student);
             await _context.SaveChangesAsync();
             return student.Id == id;
@@ -96,6 +110,17 @@ namespace StudentProj.Infrastructure.Repositories
             if (student.Id <= 0)
             {
                 await _context.Student.AddAsync(student);
+                
+                var userRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "User" && !r.IsDeleted);
+                if (userRole != null)
+                {
+                    await _context.StudentRoles.AddAsync(new StudentRoles
+                    {
+                        Student = student,
+                        RoleId = userRole.Id
+                    });
+                }
+
                 await _context.SaveChangesAsync();
                 return student.Id;
             }

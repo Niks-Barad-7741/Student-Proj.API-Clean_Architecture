@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using StudentProj.Core.Common;
 
 namespace StudentProj.Core.Entities
 {
@@ -40,7 +41,7 @@ namespace StudentProj.Core.Entities
         public DateTime? RefereshTokenExpiryTime { get; set; }
 
         // Audit Columns (Option A - Appended at the end of the table)
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTimeHelper.GetIndianStandardTime();
 
         public string? CreatedBy { get; set; }
 

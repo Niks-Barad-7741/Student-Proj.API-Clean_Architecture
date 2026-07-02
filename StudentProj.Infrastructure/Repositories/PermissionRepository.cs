@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using StudentProj.Core.Entities;
 using StudentProj.Core.Interface;
 using StudentProj.Data;
+using StudentProj.Core.Common;
 
 
 namespace StudentProj.Infrastructure.Repositories
@@ -42,44 +43,52 @@ namespace StudentProj.Infrastructure.Repositories
             }
         }
 
-        // New Helper: Get Permission IDs to cascade down (for assign) or up (for revoke)
-        private List<int> GetCascadePermissionIds(int permissionId, bool isAssign)
+        // New Helper: Get Permission IDs to cascade down (for assign) or up (for revoke) dynamically
+        private async Task<List<int>> GetCascadePermissionIdsAsync(int permissionId, bool isAssign)
         {
-            // Hierarchy: read (10) <- create (9) <- update (11) <- delete (12)
+            var permissions = await _dbcontext.Permissions.Where(p => !p.IsDeleted).ToListAsync();
+            var dict = permissions.ToDictionary(p => p.PermissionName.ToLower(), p => p.Id);
+
+            var targetPerm = permissions.FirstOrDefault(p => p.Id == permissionId);
+            if (targetPerm == null) return new List<int>();
+
+            string action = targetPerm.PermissionName.ToLower();
+            List<string> cascadedActions = new List<string>();
+
             if (isAssign)
             {
-                return permissionId switch
+                cascadedActions = action switch
                 {
-                    12 => new List<int> { 11, 9, 10 }, // delete assigns update, create, read
-                    11 => new List<int> { 9, 10 },     // update assigns create, read
-                    9 => new List<int> { 10 },       // create assigns read
-                    _ => new List<int>()
+                    "delete" => new List<string> { "update", "create", "read" },
+                    "update" => new List<string> { "create", "read" },
+                    "create" => new List<string> { "read" },
+                    _ => new List<string>()
                 };
             }
             else
             {
-                return permissionId switch
+                cascadedActions = action switch
                 {
-                    10 => new List<int> { 9, 11, 12 }, // revoking read revokes create, update, delete
-                    9 => new List<int> { 11, 12 },     // revoking create revokes update, delete
-                    11 => new List<int> { 12 },        // revoking update revokes delete
-                    _ => new List<int>()
+                    "read" => new List<string> { "create", "update", "delete" },
+                    "create" => new List<string> { "update", "delete" },
+                    "update" => new List<string> { "delete" },
+                    _ => new List<string>()
                 };
             }
+
+            return cascadedActions
+                .Where(dict.ContainsKey)
+                .Select(name => dict[name])
+                .ToList();
         }
 
         // New Helper: Find fine-grained menu
         private async Task<int?> FindFineGrainedMenuIdAsync(string parentMenuName, int permissionId)
         {
-            // Map permission ID to action prefix
-            string action = permissionId switch
-            {
-                9 => "create",
-                10 => "read",
-                11 => "update",
-                12 => "delete",
-                _ => null
-            };
+            var permission = await _dbcontext.Permissions.FirstOrDefaultAsync(p => p.Id == permissionId && !p.IsDeleted);
+            if (permission == null) return null;
+
+            string action = permission.PermissionName.ToLower();
 
             if (action == null) return null;
 
@@ -159,7 +168,7 @@ namespace StudentProj.Infrastructure.Repositories
                         }
 
                         // Get permissions to cascade down
-                        var cascadePerms = GetCascadePermissionIds(permissionId, isAssign: true);
+                        var cascadePerms = await GetCascadePermissionIdsAsync(permissionId, isAssign: true);
                         foreach (var cascadePermId in cascadePerms)
                         {
                             // Assign on parent menu
@@ -234,8 +243,10 @@ namespace StudentProj.Infrastructure.Repositories
                            .Where(rp => roleIds.Contains(rp.RoleId)
                                         && !rp.IsDeleted
                                         && !rp.Role.IsDeleted
-                                        && !rp.Permission.IsDeleted)
-                           .Select(rp => rp.Permission.PermissionName)
+                                        && !rp.Permission.IsDeleted
+                                        && rp.Menu != null
+                                        && !rp.Menu.IsDeleted)
+                           .Select(rp => rp.Permission.PermissionName + ":" + rp.Menu.MenuName)
                            .Distinct()
                            .ToListAsync();
         }
@@ -252,8 +263,10 @@ namespace StudentProj.Infrastructure.Repositories
                 .Where(rp => roleNames.Contains(rp.Role.RoleName)
                              && !rp.IsDeleted
                              && !rp.Role.IsDeleted
-                             && !rp.Permission.IsDeleted)
-                .Select(rp => rp.Permission.PermissionName)
+                             && !rp.Permission.IsDeleted
+                             && rp.Menu != null
+                             && !rp.Menu.IsDeleted)
+                .Select(rp => rp.Permission.PermissionName + ":" + rp.Menu.MenuName)
                 .Distinct()
                 .ToListAsync();
         }
@@ -270,7 +283,7 @@ namespace StudentProj.Infrastructure.Repositories
             var permission = await GetPermissionByIdAsync(id);
             if (permission == null) return false;
             permission.IsDeleted = true;
-            permission.DeletedAt = DateTime.Now;
+            permission.DeletedAt = DateTimeHelper.GetIndianStandardTime();
             _dbcontext.Permissions.Update(permission);
             await _dbcontext.SaveChangesAsync();
             return true;
@@ -287,7 +300,7 @@ namespace StudentProj.Infrastructure.Repositories
             if (rolePermission == null) return false;
 
             rolePermission.IsDeleted = true;
-            rolePermission.DeletedAt = DateTime.Now;
+            rolePermission.DeletedAt = DateTimeHelper.GetIndianStandardTime();
             _dbcontext.RolePermissions.Update(rolePermission);
             return true;
         }
@@ -324,7 +337,7 @@ namespace StudentProj.Infrastructure.Repositories
                         }
 
                         // Get permissions to cascade up
-                        var cascadePerms = GetCascadePermissionIds(permissionId, isAssign: false);
+                        var cascadePerms = await GetCascadePermissionIdsAsync(permissionId, isAssign: false);
                         foreach (var cascadePermId in cascadePerms)
                         {
                             // Revoke from parent menu

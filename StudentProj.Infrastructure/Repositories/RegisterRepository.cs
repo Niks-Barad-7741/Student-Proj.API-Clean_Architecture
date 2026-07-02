@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using StudentProj.Core.Entities;
 using StudentProj.Core.Interface;
 using StudentProj.Data;
+using StudentProj.Core.Common;
 
 namespace StudentProj.Infrastructure.Repositories
 {
@@ -70,7 +71,7 @@ namespace StudentProj.Infrastructure.Repositories
             foreach (var sr in existing)
             {
                 sr.IsDeleted = true;
-                sr.DeletedAt = DateTime.Now;
+                sr.DeletedAt = DateTimeHelper.GetIndianStandardTime();
             }
             _dbcontext.StudentRoles.UpdateRange(existing);
 
@@ -134,7 +135,7 @@ namespace StudentProj.Infrastructure.Repositories
                 return false;
             }
             studentRole.IsDeleted = true;
-            studentRole.DeletedAt = DateTime.Now;
+            studentRole.DeletedAt = DateTimeHelper.GetIndianStandardTime();
 
             _dbcontext.StudentRoles.Update(studentRole);
             await _dbcontext.SaveChangesAsync();

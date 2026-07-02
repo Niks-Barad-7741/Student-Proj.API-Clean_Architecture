@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using StudentProj.Application.DTO;
 using StudentProj.Application.Interfaces;
 using StudentProj.Core.Entities;
@@ -19,6 +19,8 @@ namespace StudentProj.Application.Services
         public async Task<int> Createstudentasync(RegisterDTO dto)
         {
             var entity = _mapper.Map<Student>(dto);
+            // Hash the password before saving to the database
+            entity.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
             return await _repository.Createstudentasync(entity);
         }
 
@@ -58,10 +60,17 @@ namespace StudentProj.Application.Services
 
         public async Task<bool> UpdateStudentasync(int id, StudentDTO dto)
         {
-            var entity = _mapper.Map<Student>(dto);
-            entity.Id = id;
-            return await _repository.UpdateStudentasync(id,entity);
+            // Fetch existing so we don't overwrite PasswordHash with null
+            var existingEntity = await _repository.GetStudentbyid(id);
+            if (existingEntity == null) return false;
 
+            // Update only the fields that are allowed to change
+            existingEntity.Name = dto.Name;
+            existingEntity.Email = dto.Email;
+            existingEntity.Address = dto.Address;
+            existingEntity.Phone = dto.Phone;
+
+            return await _repository.UpdateStudentasync(id, existingEntity);
         }
 
         public async Task<int> UpsertStudentAsync(StudentDTO student)

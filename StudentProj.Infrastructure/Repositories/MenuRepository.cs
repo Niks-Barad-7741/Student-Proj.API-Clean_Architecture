@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using StudentProj.Core.Entities;
 using StudentProj.Core.Interface;
 using StudentProj.Data;
+using StudentProj.Core.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +48,7 @@ namespace StudentProj.Infrastructure.Repositories
             if (menu == null) return false;
 
             menu.IsDeleted = true;
-            menu.DeletedAt = DateTime.Now;
+            menu.DeletedAt = DateTimeHelper.GetIndianStandardTime();
             _dbcontext.Menus.Update(menu);
             await _dbcontext.SaveChangesAsync();
             return true;
