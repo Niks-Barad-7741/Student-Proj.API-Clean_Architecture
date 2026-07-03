@@ -15,7 +15,9 @@ namespace StudentProj.Application.Validators
                 .NotEmpty()
                 .WithMessage("Role IDs are required")
                 .Matches(@"^[0-9]+(,[0-9]+)*$")
-                .WithMessage("Role IDs must be a comma-separated list of numbers (e.g. '1,2')");
+                .WithMessage("Role IDs must be a comma-separated list of numbers (e.g. '1,2')")
+                .Matches(@"^\d+$")
+                .WithMessage("Role IDs must be a positive number");
         }
     }
 }

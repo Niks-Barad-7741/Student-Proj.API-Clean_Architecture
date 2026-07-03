@@ -25,8 +25,11 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Role name cannot exceed 12 characters!")
 
                 // only letters allowed
-                .Matches("^[a-zA-Z]+$")
-                .WithMessage("Role name can only contain letters!");
+                //.Matches("^[a-zA-Z]+$")
+                //.WithMessage("Role name can only contain letters!")
+
+                .Matches(@"^[A-Za-z]+(?: [A-Za-z]+)*$")
+                .WithMessage("Role name can contain only letters and single spaces");
         }
     }
 }

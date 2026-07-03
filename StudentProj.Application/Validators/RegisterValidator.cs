@@ -8,13 +8,15 @@ namespace StudentProj.Application.Validators
         public RegisterValidator()
         {
             RuleFor(x => x.Name)
-                .NotEmpty()
-                .WithMessage("Name is required")
-                .NotNull()
-                .WithMessage("Name cannot be null")
-                .MinimumLength(2)
-                .WithMessage("Name must be at least 2 characters long")
-                .MaximumLength(30);
+                .NotNull().WithMessage("Name cannot be null")
+                .NotEmpty().WithMessage("Name is required")
+                .MinimumLength(2).WithMessage("Name must be at least 2 characters long")
+                .MaximumLength(30).WithMessage("Name cannot exceed 30 characters")
+                .Matches(@"^[A-Za-z]+(?: [A-Za-z]+)*$")
+                .WithMessage("Name can contain only letters and single spaces")
+                .Matches(@"^\S(.*\S)?$")
+                .WithMessage("Name cannot start or end with whitespace");
+
             RuleFor(x => x.Email)
                 .NotEmpty()
                 .WithMessage("Email is Required")

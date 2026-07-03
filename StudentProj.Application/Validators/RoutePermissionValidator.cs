@@ -21,12 +21,16 @@ namespace StudentProj.Application.Validators
             RuleFor(x => x.RequiredMenuName)
                 .NotEmpty().WithMessage("Required Menu Name is required!")
                 .NotNull().WithMessage("Required Menu Name cannot be null!")
-                .MaximumLength(50).WithMessage("Required Menu Name cannot exceed 50 characters!");
+                .MaximumLength(50).WithMessage("Required Menu Name cannot exceed 50 characters!")
+                                .Matches(@"^\S(.*\S)?$")
+                .WithMessage("Cannot start or end with whitespace");
 
             RuleFor(x => x.RequiredPermissionName)
                 .NotEmpty().WithMessage("Required Permission Name is required!")
                 .NotNull().WithMessage("Required Permission Name cannot be null!")
-                .MaximumLength(50).WithMessage("Required Permission Name cannot exceed 50 characters!");
+                .MaximumLength(50).WithMessage("Required Permission Name cannot exceed 50 characters!")
+                .Matches(@"^\S(.*\S)?$")
+                .WithMessage("Cannot start or end with whitespace");
         }
     }
 }
