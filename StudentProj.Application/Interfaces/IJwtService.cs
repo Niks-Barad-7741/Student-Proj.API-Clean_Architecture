@@ -1,4 +1,4 @@
-﻿using StudentProj.Core.Entities;
+using StudentProj.Domain.Entities;
 using System.Security.Claims;
 
 namespace StudentProj.Application.Interfaces

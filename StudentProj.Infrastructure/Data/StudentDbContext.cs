@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using StudentProj.Core.Entities;
+using Microsoft.EntityFrameworkCore;
+using StudentProj.Domain.Entities;
 using System.Data;
 
 namespace StudentProj.Data
@@ -59,6 +59,52 @@ namespace StudentProj.Data
                 .HasForeignKey(n => n.SubjectId)
                 .OnDelete(DeleteBehavior.NoAction);
             });
+
+            // ===== Filtered Unique Indexes (Enterprise-Level) =====
+            // These ensure data integrity at the DB level even under race conditions.
+            // Filtered on IsDeleted = 0 so soft-deleted records don't block re-creation.
+
+            // Student: Email must be unique among active records
+            modelBuilder.Entity<Student>()
+                .HasIndex(s => s.Email)
+                .HasFilter("IsDeleted = 0")
+                .IsUnique();
+
+            // Student: Phone must be unique among active records
+            modelBuilder.Entity<Student>()
+                .HasIndex(s => s.Phone)
+                .HasFilter("IsDeleted = 0")
+                .IsUnique();
+
+            // Role: RoleName must be unique among active records
+            modelBuilder.Entity<Roles>()
+                .HasIndex(r => r.RoleName)
+                .HasFilter("IsDeleted = 0")
+                .IsUnique();
+
+            // Permission: PermissionName must be unique among active records
+            modelBuilder.Entity<Permissions>()
+                .HasIndex(p => p.PermissionName)
+                .HasFilter("IsDeleted = 0")
+                .IsUnique();
+
+            // Menu: MenuName must be unique among active records
+            modelBuilder.Entity<Menu>()
+                .HasIndex(m => m.MenuName)
+                .HasFilter("IsDeleted = 0")
+                .IsUnique();
+
+            // Course: CourseName must be unique among active records
+            modelBuilder.Entity<Course>()
+                .HasIndex(c => c.CourseName)
+                .HasFilter("isDeleted = 0")
+                .IsUnique();
+
+            // Subject: SubjectCode + CourseId must be unique among active records
+            modelBuilder.Entity<Subject>()
+                .HasIndex(s => new { s.SubjectCode, s.CourseId })
+                .HasFilter("IsDeleted = 0")
+                .IsUnique();
         }
     }
 }

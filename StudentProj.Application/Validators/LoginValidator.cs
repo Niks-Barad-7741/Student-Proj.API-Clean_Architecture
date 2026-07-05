@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using StudentProj.Application.DTO;
+using FluentValidation;
+using StudentProj.Application.DTOs;
 
 namespace StudentProj.Application.Validators
 {
@@ -12,8 +12,8 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Email is Required")
                 .EmailAddress()
                 .WithMessage("Invalid Email Address")
-                .Matches(@"^[a-zA-Z0-9._%+-]+@gmail\.com$")
-                .WithMessage("Email must be a valid Gmail address");
+                .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+                .WithMessage("Please enter a valid email address");
             RuleFor(x => x.Password)
                 .NotEmpty()
                 .WithMessage("Password is Required")

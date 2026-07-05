@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Enums;
+using StudentProj.Domain.Enums;
 using StudentProj.DTO;
 
 namespace StudentProj.API.Controllers
@@ -58,8 +58,14 @@ namespace StudentProj.API.Controllers
                 return StatusCode(bad.StatusCodes, bad);
             }
 
-            var updated = await _service.UpdateAsync(id, dto);
-            var response = ApiResponse<object>.Create(ResponseStatus.CourseUpdatedSuccessfully, updated);
+            var (item, error) = await _service.UpdateAsync(id, dto);
+            if (item == null)
+            {
+                if (error == "Course not found") return NotFound(ApiResponse<object>.Create(ResponseStatus.CourseNotFound, error));
+                return BadRequest(ApiResponse<object>.Create(ResponseStatus.BadRequest, error ?? "Failed to update course"));
+            }
+
+            var response = ApiResponse<object>.Create(ResponseStatus.CourseUpdatedSuccessfully, item);
             return StatusCode(response.StatusCodes, response);
         }
         [HttpDelete("{id}")]

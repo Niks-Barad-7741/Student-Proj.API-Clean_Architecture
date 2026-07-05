@@ -1,8 +1,8 @@
-﻿using AutoMapper;
-using StudentProj.Application.DTO;
+using AutoMapper;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 
 namespace StudentProj.Application.Services
 {
@@ -19,7 +19,7 @@ namespace StudentProj.Application.Services
         {
             return await _repository.AssignPermissionToRoleAsync(roleId, permissionId, menuId);
         }
-        public async Task<PermissionDTO> CreatePermissionAsync(PermissionDTO dto)
+        public async Task<PermissionDTO> CreatePermissionAsync(CreatePermissionDTO dto)
         {
             var entity = _mapper.Map<Permissions>(dto);
             var created = await _repository.CreatePermissionAsync(entity);
@@ -64,10 +64,16 @@ namespace StudentProj.Application.Services
         {
             return await _repository.RemovePermissionFromRoleAsync(roleId, permissionId, menuId);
         }
-        public async Task<bool> UpdatePermissionRoleAsync(int id, PermissionDTO dto)
+        public async Task<(bool Success, string Error)> UpdatePermissionRoleAsync(int id, PermissionDTO dto)
         {
+            // Check if another permission already has this name
+            var existing = await _repository.GetPermissionByNameAsync(dto.PermissionName);
+            if (existing != null && existing.Id != id)
+                return (false, "A permission with this name already exists");
+
             var entity = _mapper.Map<Permissions>(dto);
-            return await _repository.UpdatePermissionRoleAsync(id, entity);
+            var result = await _repository.UpdatePermissionRoleAsync(id, entity);
+            return (result, result ? null : "Failed to update permission");
         }
     }
 }

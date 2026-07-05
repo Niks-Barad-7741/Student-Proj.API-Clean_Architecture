@@ -1,8 +1,8 @@
-﻿using AutoMapper;
-using StudentProj.Application.DTO;
+using AutoMapper;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 
 namespace StudentProj.Application.Services
 {
@@ -17,7 +17,7 @@ namespace StudentProj.Application.Services
             _studentRepository = studentRepository;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<AttendanceDTO>> GetBySubjectIdAsync(int subjectId, DateTime date)
+        public async Task<IEnumerable<AttendanceDTO>> GetBySubjectIdAsync(int subjectId, DateTime? date)
         {
             var entities = await _repository.GetBySubjectIdAsync(subjectId, date);
             return _mapper.Map<IEnumerable<AttendanceDTO>>(entities);
@@ -36,7 +36,8 @@ namespace StudentProj.Application.Services
                 StudentName = student.Name,
                 TotalClasses = total,
                 PresentClass = present,
-                AttendancePercentage = total == 0 ? 0 : Math.Round((decimal)present / total * 100, 2)
+                AttendancePercentage = total == 0 ? 0 : Math.Round((decimal)present / total * 100, 2),
+                Message = total == 0 ? "No attendance records found for this student." : "Success"
             };
         }
         public async Task<AttendanceDTO> RecordAsync(RecordAttendanceDTO dto)

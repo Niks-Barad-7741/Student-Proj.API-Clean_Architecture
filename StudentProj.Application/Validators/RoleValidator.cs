@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using StudentProj.Application.DTO;
+using FluentValidation;
+using StudentProj.Application.DTOs;
 
 namespace StudentProj.Application.Validators
 {
@@ -8,28 +8,36 @@ namespace StudentProj.Application.Validators
         public RoleValidator()
         {
             RuleFor(x => x.RoleName)
-                // not empty
                 .NotEmpty()
                 .WithMessage("Role name is required!")
-
-                // not null
                 .NotNull()
                 .WithMessage("Role name cannot be null!")
-
-                // min 2 characters
-                .MinimumLength(2)
-                .WithMessage("Role name must be at least 2 characters!")
-
-                // max 12 characters
+                .MinimumLength(3).WithMessage("Role name must be at least 3 characters long")
                 .MaximumLength(12)
                 .WithMessage("Role name cannot exceed 12 characters!")
-
-                // only letters allowed
-                //.Matches("^[a-zA-Z]+$")
-                //.WithMessage("Role name can only contain letters!")
-
                 .Matches(@"^[A-Za-z]+(?: [A-Za-z]+)*$")
-                .WithMessage("Role name can contain only letters and single spaces");
+                .WithMessage("Role name can contain only letters and single spaces")
+                .NotEqual("string", StringComparer.OrdinalIgnoreCase)
+                .WithMessage("Role name cannot be the default word 'string'.");
+        }
+    }
+
+    public class CreateRoleValidator : AbstractValidator<CreateRoleDTO>
+    {
+        public CreateRoleValidator()
+        {
+            RuleFor(x => x.RoleName)
+                .NotEmpty()
+                .WithMessage("Role name is required!")
+                .NotNull()
+                .WithMessage("Role name cannot be null!")
+                .MinimumLength(3).WithMessage("Role name must be at least 3 characters long")
+                .MaximumLength(12)
+                .WithMessage("Role name cannot exceed 12 characters!")
+                .Matches(@"^[A-Za-z]+(?: [A-Za-z]+)*$")
+                .WithMessage("Role name can contain only letters and single spaces")
+                .NotEqual("string", StringComparer.OrdinalIgnoreCase)
+                .WithMessage("Role name cannot be the default word 'string'.");
         }
     }
 }

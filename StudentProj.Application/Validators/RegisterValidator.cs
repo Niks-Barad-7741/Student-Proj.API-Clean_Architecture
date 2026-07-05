@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using StudentProj.Application.DTO;
+using FluentValidation;
+using StudentProj.Application.DTOs;
 
 namespace StudentProj.Application.Validators
 {
@@ -21,8 +21,8 @@ namespace StudentProj.Application.Validators
                 .NotEmpty()
                 .WithMessage("Email is Required")
                 .EmailAddress()
-                .Matches(@"^[a-zA-Z0-9._%+-]+@gmail\.com$")
-                .WithMessage("Email must be a valid Gmail address")
+                .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+                .WithMessage("Please enter a valid email address")
                 .NotNull()
                 .WithMessage("Email cannot be null");
             RuleFor(x => x.Address)

@@ -1,4 +1,4 @@
-﻿using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;

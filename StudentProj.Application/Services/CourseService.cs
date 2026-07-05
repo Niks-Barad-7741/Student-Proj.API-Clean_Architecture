@@ -1,8 +1,8 @@
-﻿using AutoMapper;
-using StudentProj.Application.DTO;
+using AutoMapper;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 
 namespace StudentProj.Application.Services
 {
@@ -47,14 +47,18 @@ namespace StudentProj.Application.Services
             var entities = await _repository.GetSubjectsAsync(courseId);
             return _mapper.Map<IEnumerable<SubjectDTO>>(entities);
         }
-        public async Task<CourseDTO> UpdateAsync(int id, UpdateCourseDTO dto)
+        public async Task<(CourseDTO? Course, string Error)> UpdateAsync(int id, UpdateCourseDTO dto)
         {
             var existing = await _repository.GetByIdAsync(id);
-            if (existing == null) return null;
+            if (existing == null) return (null, "Course not found");
+
+            // Check if another course already has this name
+            var nameOwner = await _repository.GetByNameAsync(dto.CourseName);
+            if (nameOwner != null && nameOwner.Id != id) return (null, "A course with this name already exists");
 
             _mapper.Map(dto, existing);
             var updated = await _repository.UpdateAsync(id, existing);
-            return _mapper.Map<CourseDTO>(updated);
+            return (_mapper.Map<CourseDTO>(updated), null);
         }
     }
 }

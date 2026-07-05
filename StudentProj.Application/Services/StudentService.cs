@@ -1,8 +1,8 @@
 using AutoMapper;
-using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 
 namespace StudentProj.Application.Services
 {
@@ -58,11 +58,21 @@ namespace StudentProj.Application.Services
             return _mapper.Map<StudentDTO>(entity);
         }
 
-        public async Task<bool> UpdateStudentasync(int id, StudentDTO dto)
+        public async Task<(bool Success, string Error)> UpdateStudentasync(int id, StudentDTO dto)
         {
             // Fetch existing so we don't overwrite PasswordHash with null
             var existingEntity = await _repository.GetStudentbyid(id);
-            if (existingEntity == null) return false;
+            if (existingEntity == null) return (false, "Student not found");
+
+            // Check Email uniqueness (exclude current student)
+            var emailOwner = await _repository.GetStudentbyemailasync(dto.Email);
+            if (emailOwner != null && emailOwner.Id != id)
+                return (false, "This email is already registered to another student");
+
+            // Check Phone uniqueness (exclude current student)
+            var phoneOwner = await _repository.GetStudentByPhoneAsync(dto.Phone);
+            if (phoneOwner != null && phoneOwner.Id != id)
+                return (false, "This phone number is already registered to another student");
 
             // Update only the fields that are allowed to change
             existingEntity.Name = dto.Name;
@@ -70,7 +80,8 @@ namespace StudentProj.Application.Services
             existingEntity.Address = dto.Address;
             existingEntity.Phone = dto.Phone;
 
-            return await _repository.UpdateStudentasync(id, existingEntity);
+            var result = await _repository.UpdateStudentasync(id, existingEntity);
+            return (result, result ? null : "Failed to update student");
         }
 
         public async Task<int> UpsertStudentAsync(StudentDTO student)

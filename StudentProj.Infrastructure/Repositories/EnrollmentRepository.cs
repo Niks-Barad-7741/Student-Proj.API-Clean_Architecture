@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using StudentProj.Core.Common;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using Microsoft.EntityFrameworkCore;
+using StudentProj.Domain.Common;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 using StudentProj.Data;
 
 namespace StudentProj.Infrastructure.Repositories
@@ -16,6 +16,12 @@ namespace StudentProj.Infrastructure.Repositories
         }
         public async Task<Enrollment> EnrollStudentAsync(Enrollment enrollment)
         {
+            var studentExists = await _dbcontext.Student.AnyAsync(s => s.Id == enrollment.StudentId && !s.IsDeleted);
+            if (!studentExists) return null;
+
+            var courseExists = await _dbcontext.Course.AnyAsync(c => c.Id == enrollment.CourseId && !c.isDeleted);
+            if (!courseExists) return null;
+
             var check = await _dbcontext.Enrollment
                 .AnyAsync(n => n.StudentId == enrollment.StudentId
                 && n.CourseId == enrollment.CourseId
@@ -58,9 +64,9 @@ namespace StudentProj.Infrastructure.Repositories
             {
                 return null;
             }
-            enrollment.Grade = enrollment.Grade;
+            enrollmentcheck.Grade = enrollment.Grade;
             await _dbcontext.SaveChangesAsync();
-            return enrollment;
+            return enrollmentcheck;
         }
     }
 }

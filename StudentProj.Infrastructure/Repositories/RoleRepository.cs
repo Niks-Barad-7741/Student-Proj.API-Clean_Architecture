@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 using StudentProj.Data;
-using StudentProj.Core.Common;
+using StudentProj.Domain.Common;
 
 namespace StudentProj.Infrastructure.Repositories
 {

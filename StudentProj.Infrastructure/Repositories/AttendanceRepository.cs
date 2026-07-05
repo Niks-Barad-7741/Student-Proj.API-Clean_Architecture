@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using StudentProj.Core.Common;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using Microsoft.EntityFrameworkCore;
+using StudentProj.Domain.Common;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 using StudentProj.Data;
 
 namespace StudentProj.Infrastructure.Repositories
@@ -17,14 +17,14 @@ namespace StudentProj.Infrastructure.Repositories
             //_mapper = mapper;
         }
 
-        public async Task<IEnumerable<Attendance>> GetBySubjectIdAsync(int subjectId, DateTime date)
+        public async Task<IEnumerable<Attendance>> GetBySubjectIdAsync(int subjectId, DateTime? date)
         {
             var attendance = await _dbcontext.Attendance
             .Include(n => n.Student)
             .Include(n => n.Subject)
             .Where(n =>
             n.SubjectId == subjectId &&
-            n.Date.Date == date.Date &&
+            (!date.HasValue || n.Date.Date == date.Value.Date) &&
             !n.IsDeleted &&
             !n.Subject.IsDeleted)
             .ToListAsync();
@@ -58,8 +58,14 @@ namespace StudentProj.Infrastructure.Repositories
             if (subject == null)
             {
                 return null;
-                //var error = ApiResponse<object>.Create(ResponseStatus.NotFound, "Subject not found");
-                //return StatusCode(error.StatusCodes);
+            }
+
+            var student = await _dbcontext.Student
+                .FirstOrDefaultAsync(n => n.Id == entity.StudentId && !n.IsDeleted);
+
+            if (student == null)
+            {
+                return null;
             }
 
             var exists = await _dbcontext.Attendance

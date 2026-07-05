@@ -1,9 +1,9 @@
 using StudentProj.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Enums;
+using StudentProj.Domain.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -25,7 +25,7 @@ namespace StudentProj.API.Controllers
         public async Task<IActionResult> GetALL()
         {
             var items = await _service.GetAllRoutePermissionsAsync();
-            var response = ApiResponse<IEnumerable<RoutePermissionDTO>>.Create(ResponseStatus.PermissionRetriveSuccessfully, items);
+            var response = ApiResponse<IEnumerable<RoutePermissionDTO>>.SuccessResponse(items, "Route Permissions retrieved successfully");
             return StatusCode(response.StatusCodes, response);
         }
 
@@ -34,14 +34,14 @@ namespace StudentProj.API.Controllers
         {
             var item = await _service.GetRoutePermissionByIdAsync(id);
             if (item == null) return NotFound(ApiResponse<object>.Create(ResponseStatus.PermissionNotFound));
-            return Ok(ApiResponse<RoutePermissionDTO>.Create(ResponseStatus.PermissionRetriveSuccessfully, item));
+            return Ok(ApiResponse<RoutePermissionDTO>.SuccessResponse(item, "Route Permission retrieved successfully"));
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] RoutePermissionDTO dto)
         {
             var created = await _service.CreateRoutePermissionAsync(dto);
-            var response = ApiResponse<object>.Create(ResponseStatus.UserAddedSuccessfully, created);
+            var response = ApiResponse<object>.SuccessResponse(created, "Route Permission Added Successfully");
             return StatusCode(response.StatusCodes, response);
         }
 
@@ -50,7 +50,7 @@ namespace StudentProj.API.Controllers
         {
             var res = await _service.UpdateRoutePermissionAsync(id, dto);
             if (!res) return BadRequest(ApiResponse<object>.Create(ResponseStatus.BadRequest, "Failed to update route permission"));
-            var response = ApiResponse<object>.Create(ResponseStatus.UserUpdatedSuccessfully);
+            var response = ApiResponse<object>.SuccessResponse(null, "Route Permission Updated Successfully");
             return StatusCode(response.StatusCodes, response);
         }
 
@@ -59,7 +59,7 @@ namespace StudentProj.API.Controllers
         {
             var res = await _service.DeleteRoutePermissionAsync(id);
             if (!res) return BadRequest(ApiResponse<object>.Create(ResponseStatus.BadRequest, "Failed to delete route permission"));
-            var response = ApiResponse<object>.Create(ResponseStatus.UserSoftDeleteSuccessfully);
+            var response = ApiResponse<object>.SuccessResponse(null, "Route Permission Deleted Successfully");
             return StatusCode(response.StatusCodes, response);
         }
     }

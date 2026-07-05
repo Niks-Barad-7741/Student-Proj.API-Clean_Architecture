@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using StudentProj.Application.DTO;
+using FluentValidation;
+using StudentProj.Application.DTOs;
 
 namespace StudentProj.Application.Validators
 {
@@ -12,11 +12,22 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Permission name is required")
                 .NotNull()
                 .WithMessage("Permission name cannot be null")
-                .Matches(@"^(create|read|update|delete)$")
-                .WithMessage("Permission must be create, read, update, or delete");
-                // Allows letters, colons (:), and hyphens (-) to support formats like "read:student"
-                //.Matches("^[a-zA-Z:-]+$")
-                //.WithMessage("Permission name can only contain letters, colons (:), and hyphens (-).");
+                .Matches(@"^(create|read|update|delete)(-[a-zA-Z]+)?$")
+                .WithMessage("Permission must be create, read, update, or delete (with optional suffix like -only)");
+        }
+    }
+
+    public class CreatePermissionValidator : AbstractValidator<CreatePermissionDTO>
+    {
+        public CreatePermissionValidator()
+        {
+            RuleFor(x => x.PermissionName)
+                .NotEmpty()
+                .WithMessage("Permission name is required")
+                .NotNull()
+                .WithMessage("Permission name cannot be null")
+                .Matches(@"^(create|read|update|delete)(-[a-zA-Z]+)?$")
+                .WithMessage("Permission must be create, read, update, or delete (with optional suffix like -only)");
         }
     }
 }

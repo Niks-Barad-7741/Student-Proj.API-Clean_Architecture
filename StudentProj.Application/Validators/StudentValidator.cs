@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using StudentProj.Application.DTO;
+using FluentValidation;
+using StudentProj.Application.DTOs;
 
 namespace StudentProj.Application.Validators
 {

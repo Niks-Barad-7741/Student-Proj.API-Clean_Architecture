@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Interface;
+using StudentProj.Domain.Interfaces;
 using StudentProj.Data;
 using StudentProj.Infrastructure.Repositories;
 using StudentProj.Infrastructure.Services;
@@ -17,7 +17,7 @@ namespace StudentProj.Infrastructure
             services.AddDbContext<StudentDbcontext>(options =>
                 options.UseSqlServer(
                     configuration.GetConnectionString("StudentProj-clean"),
-                    b => b.MigrationsAssembly("StudentProj.API")));
+                    b => b.MigrationsAssembly("StudentProj.Infrastructure")));
 
             services.AddScoped<IStudent, StudentRepository>(); // I recommend renaming IStudent to IStudentRepository eventually!
             services.AddScoped<ICourseRepository, CourseRepository>();

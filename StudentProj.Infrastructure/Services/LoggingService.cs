@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Serilog;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Common;   // Assuming IpHelper is here
-using StudentProj.Core.Entities; // Needed for Logs entity
+using StudentProj.Domain.Common;   // Assuming IpHelper is here
+using StudentProj.Domain.Entities; // Needed for Logs entity
 using StudentProj.Data;          // Infrastructure has access to DbContext
 
 namespace StudentProj.Infrastructure.Services

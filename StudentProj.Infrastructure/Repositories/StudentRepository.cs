@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using StudentProj.Core.Common;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using StudentProj.Domain.Common;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 using StudentProj.Data;
 
 namespace StudentProj.Infrastructure.Repositories
@@ -147,6 +147,13 @@ namespace StudentProj.Infrastructure.Repositories
             }
 
             return 0;
+        }
+
+        public async Task<Student> GetStudentByPhoneAsync(string phone)
+        {
+            return await _context.Student
+                .Where(s => s.Phone == phone && !s.IsDeleted)
+                .FirstOrDefaultAsync();
         }
     }
 }

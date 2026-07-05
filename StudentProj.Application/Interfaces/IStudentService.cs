@@ -1,5 +1,5 @@
-﻿using StudentProj.Application.DTO;
-using StudentProj.Core.Entities;
+using StudentProj.Application.DTOs;
+using StudentProj.Domain.Entities;
 
 namespace StudentProj.Application.Interfaces
 {
@@ -8,7 +8,7 @@ namespace StudentProj.Application.Interfaces
         Task<List<StudentDTO>> GetAllStudentsasync();
         Task<StudentDTO> GetStudentbyid(int id);
         Task<int> Createstudentasync(RegisterDTO dto);
-        Task<bool> UpdateStudentasync(int id, StudentDTO dto);
+        Task<(bool Success, string Error)> UpdateStudentasync(int id, StudentDTO dto);
         Task<StudentDTO> Getstudentbynameasync(string name);
         Task<StudentDTO> GetStudentbyemailasync(string email);
         Task<bool> DeleteStudentasync(int id);

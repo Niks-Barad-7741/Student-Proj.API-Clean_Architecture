@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Caching.Distributed;
-using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
 using System.Security.Claims;
 using System.Text.Json;

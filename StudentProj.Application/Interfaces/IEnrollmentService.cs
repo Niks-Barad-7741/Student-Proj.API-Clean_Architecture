@@ -1,4 +1,4 @@
-﻿using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +11,6 @@ namespace StudentProj.Application.Interfaces
     {
         Task<EnrollmentDTO> EnrollStudentAsync(EnrollStudentDTO dto);
         Task<IEnumerable<EnrollmentDTO>> GetStudentByIdAsync(int studentId);
-        Task<EnrollmentDTO> UpdateGradeAsync(int id, EnrollmentDTO dto);
+        Task<EnrollmentDTO> UpdateGradeAsync(int id, UpdateGradeDTO dto);
     }
 }

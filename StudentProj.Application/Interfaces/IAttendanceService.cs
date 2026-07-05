@@ -1,4 +1,4 @@
-﻿using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace StudentProj.Application.Interfaces
     public interface IAttendanceService
     {
         Task<AttendanceDTO> RecordAsync(RecordAttendanceDTO dto);
-        Task<IEnumerable<AttendanceDTO>> GetBySubjectIdAsync(int subjectId, DateTime date);
+        Task<IEnumerable<AttendanceDTO>> GetBySubjectIdAsync(int subjectId, DateTime? date);
         Task<ReportAttendenceDTO> GetRecordAsync(int studentId);
     }
 }

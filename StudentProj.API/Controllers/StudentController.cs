@@ -1,9 +1,9 @@
 using StudentProj.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Enums;
+using StudentProj.Domain.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -71,10 +71,10 @@ namespace StudentProj.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateStudent(int id, [FromBody] StudentDTO dto)
         {
-            var result = await _service.UpdateStudentasync(id, dto);
-            if (!result)
+            var (success, error) = await _service.UpdateStudentasync(id, dto);
+            if (!success)
             {
-                var bad = ApiResponse<object>.Create(ResponseStatus.BadRequest, "Failed to update student");
+                var bad = ApiResponse<object>.Create(ResponseStatus.BadRequest, error ?? "Failed to update student");
                 return StatusCode(bad.StatusCodes, bad);
             }
             var response = ApiResponse<object>.SuccessResponse(true, "Student updated successfully.");

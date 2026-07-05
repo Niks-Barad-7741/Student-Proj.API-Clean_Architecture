@@ -1,9 +1,9 @@
 using StudentProj.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Enums;
+using StudentProj.Domain.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

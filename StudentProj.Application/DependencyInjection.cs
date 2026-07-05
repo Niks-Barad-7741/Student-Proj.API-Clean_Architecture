@@ -1,8 +1,8 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
-using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
 using StudentProj.Application.Services;
 using StudentProj.Application.Validators;
@@ -34,9 +34,17 @@ namespace StudentProj.Application
             services.AddScoped<IValidator<RoleDTO>, RoleValidator>();
             services.AddScoped<IValidator<PermissionDTO>, PermissionValidator>();
             services.AddScoped<IValidator<RoutePermissionDTO>, RoutePermissionValidator>();
-
-
-            services.AddAutoMapper(cfg => cfg.AddProfile<StudentProj.Application.Mapper.MappingProfile>());
+            services.AddScoped<IValidator<MenuDTO>, MenuValidator>();
+            services.AddScoped<IValidator<AssignPermissionDTO>, AssignPermissionValidator>();
+            services.AddScoped<IValidator<CreateCourseDTO>, CourseValidator>();
+            services.AddScoped<IValidator<UpdateCourseDTO>, UpdateCourseValidator>();
+            services.AddScoped<IValidator<CreateSubjectDTO>, SubjectValidator>();
+            services.AddScoped<IValidator<UpdateSubjectDTO>, UpdateSubjectValidator>();
+            services.AddScoped<IValidator<RecordAttendanceDTO>, AttendanceValidator>();
+            services.AddScoped<IValidator<EnrollStudentDTO>, EnrollmentValidator>();
+            services.AddScoped<IValidator<UpdateGradeDTO>, UpdateGradeValidator>();
+            
+            services.AddAutoMapper(cfg => cfg.AddProfile<StudentProj.Application.Mappings.MappingProfile>());
             return services;
         }
     }

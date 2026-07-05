@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 using StudentProj.Data;
-using StudentProj.Core.Common;
+using StudentProj.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using Microsoft.EntityFrameworkCore;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 using StudentProj.Data;
 
 namespace StudentProj.Infrastructure.Repositories
@@ -19,11 +19,7 @@ namespace StudentProj.Infrastructure.Repositories
         public async Task<IEnumerable<Logs>> GetLogsAsync(Logs query)
         {
             var logs = _dbcontext.Logs.AsQueryable();
-            if (query != null) 
-            {
-                logs = logs.Where(n => n.Email == query.Email);
-            }
-            if (!string.IsNullOrEmpty(query.Action))
+            if (!string.IsNullOrEmpty(query.Email)) 
             {
                 logs = logs.Where(n => n.Email == query.Email);
             }

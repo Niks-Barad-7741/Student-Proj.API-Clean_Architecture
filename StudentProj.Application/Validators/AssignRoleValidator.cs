@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using StudentProj.Application.DTO;
+using FluentValidation;
+using StudentProj.Application.DTOs;
 
 namespace StudentProj.Application.Validators
 {
@@ -11,13 +11,11 @@ namespace StudentProj.Application.Validators
                 .GreaterThan(0)
                 .WithMessage("Student Id must be greater than 0");
 
-            RuleFor(x => x.RoleIds)
+            RuleFor(x => x.RoleNames)
                 .NotEmpty()
-                .WithMessage("Role IDs are required")
-                .Matches(@"^[0-9]+(,[0-9]+)*$")
-                .WithMessage("Role IDs must be a comma-separated list of numbers (e.g. '1,2')")
-                .Matches(@"^\d+$")
-                .WithMessage("Role IDs must be a positive number");
+                .WithMessage("Role Names are required")
+                .Matches(@"^[A-Za-z0-9 ]+(?:,[A-Za-z0-9 ]+)*$")
+                .WithMessage("Role Names must be a comma-separated list of names (e.g. 'Admin,User')");
         }
     }
 }

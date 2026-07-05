@@ -1,4 +1,4 @@
-﻿using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 
 namespace StudentProj.Application.Interfaces
 {

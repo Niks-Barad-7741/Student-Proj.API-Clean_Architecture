@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using StudentProj.Application.DTO;
+using AutoMapper;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Interface;
+using StudentProj.Domain.Interfaces;
 
 namespace StudentProj.Application.Services
 {

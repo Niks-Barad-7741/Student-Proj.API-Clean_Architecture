@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
-using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Common;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Enums;
-using StudentProj.Core.Interface;
+using StudentProj.Domain.Common;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Enums;
+using StudentProj.Domain.Interfaces;
 using StudentProj.DTO;
 using System.Net;
 using System.Net.Mail;
@@ -50,6 +50,16 @@ namespace StudentProj.API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register(RegisterDTO dto)
         {
+            // Check Email uniqueness
+            var existingByEmail = await _studentRepo.GetStudentbyemailasync(dto.Email);
+            if (existingByEmail != null)
+            {
+                await _loggingService.LogActivityAsync(dto.Name, dto.Email, "Registration Failed: Email already registered", HttpContext);
+                var emailError = ApiResponse<object>.Create(ResponseStatus.UserAlreadyExist, "Email already registered!");
+                return StatusCode(emailError.StatusCodes, emailError);
+            }
+
+            // Check Phone uniqueness
             var existing = await _auth.GetStudentbyphoneasync(dto.Phone);
             if (existing != null)
             {

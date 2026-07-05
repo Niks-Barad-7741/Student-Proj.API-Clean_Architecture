@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.37216.2 d17.14
@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentProj.API", "StudentP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentProj.Application", "StudentProj.Application\StudentProj.Application.csproj", "{CD887227-450E-47D5-888F-E1F9B05FAE01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentProj.Core", "StudentProj.Core\StudentProj.Core.csproj", "{CF781FFE-6CC5-438E-9FE9-FBEB64FA586F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentProj.Domain", "StudentProj.Domain\StudentProj.Domain.csproj", "{CF781FFE-6CC5-438E-9FE9-FBEB64FA586F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentProj.Infrastructure", "StudentProj.Infrastructure\StudentProj.Infrastructure.csproj", "{10B59381-63DF-41C5-8283-38EF118D25FA}"
 EndProject

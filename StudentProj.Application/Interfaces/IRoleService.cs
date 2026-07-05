@@ -1,4 +1,4 @@
-﻿using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 
 namespace StudentProj.Application.Interfaces
 {
@@ -7,10 +7,10 @@ namespace StudentProj.Application.Interfaces
         Task<List<RoleDTO>> GetAllRolesAsync();
         Task<RoleDTO> GetRoleByIdAsync(int id);
         Task<RoleDTO> GetRoleByNameAsync(string roleName);
-        Task<RoleDTO> CreateRoleAsync(RoleDTO dto);
+        Task<RoleDTO> CreateRoleAsync(CreateRoleDTO dto);
         Task<bool> DeleteRoleAsync(int id);
         Task<bool> RoleExistsAsync(string roleName);
-        Task<bool> UpdateRoleAsync(int id, RoleDTO dto);
+        Task<(bool Success, string Error)> UpdateRoleAsync(int id, RoleDTO dto);
         Task<List<string>> GetUserRolesAsync(int studentId);
 
     }

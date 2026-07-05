@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using Microsoft.EntityFrameworkCore;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 using StudentProj.Data;
 
 namespace StudentProj.Infrastructure.Repositories
@@ -76,6 +76,12 @@ namespace StudentProj.Infrastructure.Repositories
             _dbcontext.Course.Update(entity);
             await _dbcontext.SaveChangesAsync();
             return course;
+        }
+
+        public async Task<Course> GetByNameAsync(string courseName)
+        {
+            return await _dbcontext.Course
+                .FirstOrDefaultAsync(c => c.CourseName.ToLower() == courseName.ToLower() && !c.isDeleted);
         }
     }
 }

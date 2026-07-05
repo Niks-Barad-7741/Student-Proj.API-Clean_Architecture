@@ -1,8 +1,8 @@
-﻿using AutoMapper;
-using StudentProj.Application.DTO;
+using AutoMapper;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 
 namespace StudentProj.Application.Services
 {
@@ -26,9 +26,9 @@ namespace StudentProj.Application.Services
             var entities = await _repository.GetStudentByIdAsync(studentId);
             return _mapper.Map<IEnumerable<EnrollmentDTO>>(entities);
         }
-        public async Task<EnrollmentDTO> UpdateGradeAsync(int id, EnrollmentDTO dto)
+        public async Task<EnrollmentDTO> UpdateGradeAsync(int id, UpdateGradeDTO dto)
         {
-            var entity = _mapper.Map<Enrollment>(dto);
+            var entity = new Enrollment { Grade = dto.Grade };
             var saved = await _repository.UpdateGradeAsync(id, entity);
             return _mapper.Map<EnrollmentDTO>(saved);
         }

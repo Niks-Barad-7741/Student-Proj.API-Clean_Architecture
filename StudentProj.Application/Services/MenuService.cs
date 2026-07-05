@@ -1,8 +1,8 @@
-﻿using AutoMapper;
-using StudentProj.Application.DTO;
+using AutoMapper;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 
 namespace StudentProj.Application.Services
 {
@@ -15,7 +15,7 @@ namespace StudentProj.Application.Services
             _repository = repository;
             _mapper = mapper;
         }
-        public async Task<MenuDTO> CreateMenuAsync(MenuDTO dto)
+        public async Task<MenuDTO> CreateMenuAsync(CreateMenuDTO dto)
         {
             var entity = _mapper.Map<Menu>(dto);
             var created = await _repository.CreateMenuAsync(entity);
@@ -49,10 +49,16 @@ namespace StudentProj.Application.Services
         {
             return await _repository.MenuExistsAsync(name);
         }
-        public async Task<bool> UpdateMenuAsync(int id, MenuDTO dto)
+        public async Task<(bool Success, string Error)> UpdateMenuAsync(int id, MenuDTO dto)
         {
+            // Check if another menu already has this name
+            var existing = await _repository.GetMenuByNameAsync(dto.MenuName);
+            if (existing != null && existing.Id != id)
+                return (false, "A menu with this name already exists");
+
             var entity = _mapper.Map<Menu>(dto);
-            return await _repository.UpdateMenuAsync(id, entity);
+            var result = await _repository.UpdateMenuAsync(id, entity);
+            return (result, result ? null : "Failed to update menu");
         }
     }
 }

@@ -1,9 +1,9 @@
 using StudentProj.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using StudentProj.Application.DTO;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Enums;
+using StudentProj.Domain.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
@@ -26,17 +26,14 @@ namespace StudentProj.API.Controllers
         public async Task<IActionResult> Create([FromBody] RecordAttendanceDTO dto)
         {
             var created = await _service.RecordAsync(dto);
+            if (created == null) return BadRequest(ApiResponse<object>.Create(ResponseStatus.BadRequest, "Failed to record attendance (Invalid Subject or Student)"));
             var response = ApiResponse<object>.Create(ResponseStatus.AttendanceAddedSuccessfully, created);
             return StatusCode(response.StatusCodes, response);
         }
 
         [HttpGet("subject/{subjectId}")]
-        public async Task<IActionResult> GetBySubjectId(int subjectId, [FromQuery] DateTime date)
+        public async Task<IActionResult> GetBySubjectId(int subjectId, [FromQuery] DateTime? date)
         {
-            // If date is not provided, it defaults to DateTime.MinValue. 
-            // In a real app, you might default to DateTime.Today if date is not passed.
-            if (date == default) date = DateTime.Today;
-
             var items = await _service.GetBySubjectIdAsync(subjectId, date);
             var response = ApiResponse<IEnumerable<AttendanceDTO>>.Create(ResponseStatus.AttendanceRetriveSuccessfully, items);
             return StatusCode(response.StatusCodes, response);

@@ -1,8 +1,8 @@
-﻿using AutoMapper;
-using StudentProj.Application.DTO;
+using AutoMapper;
+using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 
 namespace StudentProj.Application.Services
 {
@@ -15,7 +15,7 @@ namespace StudentProj.Application.Services
             _repository = repository;
             _mapper = mapper;
         }
-        public async Task<RoleDTO> CreateRoleAsync(RoleDTO dto)
+        public async Task<RoleDTO> CreateRoleAsync(CreateRoleDTO dto)
         {
             var entity = _mapper.Map<Roles>(dto);
             var created = await _repository.CreateRoleAsync(entity);
@@ -48,10 +48,16 @@ namespace StudentProj.Application.Services
         {
             return await _repository.RoleExistsAsync(roleName);
         }
-        public async Task<bool> UpdateRoleAsync(int id, RoleDTO dto)
+        public async Task<(bool Success, string Error)> UpdateRoleAsync(int id, RoleDTO dto)
         {
+            // Check if another role already has this name
+            var existing = await _repository.GetRoleByNameAsync(dto.RoleName);
+            if (existing != null && existing.Id != id)
+                return (false, "A role with this name already exists");
+
             var entity = _mapper.Map<Roles>(dto);
-            return await _repository.UpdateRoleAsync(id, entity);
+            var result = await _repository.UpdateRoleAsync(id, entity);
+            return (result, result ? null : "Failed to update role");
         }
     }
 }

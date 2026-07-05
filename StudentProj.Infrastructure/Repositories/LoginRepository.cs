@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using Microsoft.EntityFrameworkCore;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 using StudentProj.Data;
 
 namespace StudentProj.Infrastructure.Repositories

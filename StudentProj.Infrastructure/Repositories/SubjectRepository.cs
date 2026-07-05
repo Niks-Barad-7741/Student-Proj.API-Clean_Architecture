@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using StudentProj.Core.Entities;
-using StudentProj.Core.Interface;
+using Microsoft.EntityFrameworkCore;
+using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 using StudentProj.Data;
 
 namespace StudentProj.Infrastructure.Repositories
@@ -85,6 +85,18 @@ namespace StudentProj.Infrastructure.Repositories
             {
                 return null;
             }
+
+            // Check SubjectCode uniqueness within the same course (exclude current subject)
+            var duplicateCode = await _dbcontext.Subject
+                .AnyAsync(n => n.SubjectCode == subject.SubjectCode
+                    && n.CourseId == subject.CourseId
+                    && n.Id != id
+                    && !n.IsDeleted);
+            if (duplicateCode)
+            {
+                return null;
+            }
+
             _dbcontext.Update(subject);
             await _dbcontext.SaveChangesAsync();
             return subject;
