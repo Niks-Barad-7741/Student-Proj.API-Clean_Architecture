@@ -12,7 +12,7 @@ namespace StudentProj.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class StudentController : Controller
+    public class StudentController : ControllerBase
     {
         private readonly IStudentService _service;
 

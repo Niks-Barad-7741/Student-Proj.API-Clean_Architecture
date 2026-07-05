@@ -15,7 +15,7 @@ namespace StudentProj.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class RoleController : Controller
+    public class RoleController : ControllerBase
     {
         private readonly IRoleService _service;
         private readonly IRegisterRepository _auth; 
@@ -39,7 +39,8 @@ namespace StudentProj.API.Controllers
         {
             var role = await _service.GetRoleByIdAsync(id);
             if (role == null) return NotFound(ApiResponse<object>.Create(ResponseStatus.RoleNotFound));
-            return Ok(ApiResponse<RoleDTO>.Create(ResponseStatus.RoleRetriveSuccessfully, role));
+            var response = ApiResponse<RoleDTO>.Create(ResponseStatus.RoleRetriveSuccessfully, role);
+            return StatusCode(response.StatusCodes, response);
         }
 
         [HttpPost]
@@ -59,7 +60,8 @@ namespace StudentProj.API.Controllers
         {
             var result = await _service.DeleteRoleAsync(id);
             if (!result) return BadRequest(ApiResponse<object>.Create(ResponseStatus.BadRequest, "Failed to delete role"));
-            return Ok(ApiResponse<object>.Create(ResponseStatus.RoleDeletedSuccessfully));
+            var response = ApiResponse<object>.Create(ResponseStatus.RoleDeletedSuccessfully);
+            return StatusCode(response.StatusCodes, response);
         }
 
         [HttpPut("{id}")]
@@ -67,7 +69,8 @@ namespace StudentProj.API.Controllers
         {
             var (success, error) = await _service.UpdateRoleAsync(id, dto);
             if (!success) return BadRequest(ApiResponse<object>.Create(ResponseStatus.BadRequest, error ?? "Failed to update role"));
-            return Ok(ApiResponse<object>.Create(ResponseStatus.RoleUpdatedSuccessfully));
+            var response = ApiResponse<object>.Create(ResponseStatus.RoleUpdatedSuccessfully);
+            return StatusCode(response.StatusCodes, response);
         }
 
         [HttpPost("assign")]
@@ -107,7 +110,8 @@ namespace StudentProj.API.Controllers
                     await _auth.RevokeRoleAsync(dto.StudentId, role.Id);
                 }
             }
-            return Ok(ApiResponse<object>.SuccessResponse("Role revoked successfully"));
+            var response = ApiResponse<object>.Create(ResponseStatus.UserUpdatedSuccessfully, "Role revoked successfully");
+            return StatusCode(response.StatusCodes, response);
         }
 
         [HttpGet("My-Roles")]
@@ -118,7 +122,8 @@ namespace StudentProj.API.Controllers
                 return Unauthorized();
 
             var roles = await _service.GetUserRolesAsync(userId);
-            return Ok(ApiResponse<List<string>>.SuccessResponse(roles));
+            var response = ApiResponse<List<string>>.Create(ResponseStatus.RoleRetriveSuccessfully, roles);
+            return StatusCode(response.StatusCodes, response);
         }
     }
 }

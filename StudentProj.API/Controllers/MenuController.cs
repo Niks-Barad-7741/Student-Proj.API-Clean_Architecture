@@ -14,7 +14,7 @@ namespace StudentProj.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class MenuController : Controller
+    public class MenuController : ControllerBase
     {
         private readonly IMenuService _service;
 
@@ -36,7 +36,8 @@ namespace StudentProj.API.Controllers
         {
             var menu = await _service.GetMenuByIdAsync(id);
             if (menu == null) return NotFound(ApiResponse<object>.Create(ResponseStatus.BadRequest, "Menu not found"));
-            return Ok(ApiResponse<MenuDTO>.SuccessResponse(menu, "Menu retrieved successfully"));
+            var response = ApiResponse<MenuDTO>.Create(ResponseStatus.MenuRetriveSuccessfully, menu);
+            return StatusCode(response.StatusCodes, response);
         }
 
         [HttpPost]
@@ -79,7 +80,8 @@ namespace StudentProj.API.Controllers
             var roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
             var menus = await _service.GetMenusFromUserAsync(userId, roles);
 
-            return Ok(ApiResponse<List<MenuDTO>>.SuccessResponse(menus, "Menus retrieved successfully"));
+            var response = ApiResponse<List<MenuDTO>>.Create(ResponseStatus.MenuRetriveSuccessfully, menus);
+            return StatusCode(response.StatusCodes, response);
         }
     }
 }

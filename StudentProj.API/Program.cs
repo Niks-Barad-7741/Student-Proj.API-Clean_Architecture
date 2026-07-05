@@ -40,7 +40,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var errors = context.ModelState
+                .Where(e => e.Value != null && e.Value.Errors.Count > 0)
+                .Select(e => e.Value!.Errors.First().ErrorMessage)
+                .ToList();
+
+            var response = StudentProj.DTO.ApiResponse<object>.Create(
+                StudentProj.Domain.Enums.ResponseStatus.InvalidData, 
+                string.Join(" | ", errors));
+
+            return new Microsoft.AspNetCore.Mvc.ObjectResult(response)
+            {
+                StatusCode = response.StatusCodes
+            };
+        };
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => 

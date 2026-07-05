@@ -12,7 +12,7 @@ namespace StudentProj.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class SubjectController : Controller
+    public class SubjectController : ControllerBase
     {
         private readonly ISubjectService _service;
 
@@ -34,7 +34,8 @@ namespace StudentProj.API.Controllers
         {
             var item = await _service.GetByIdAsync(id);
             if (item == null) return NotFound(ApiResponse<object>.Create(ResponseStatus.SubjectNotFound));
-            return Ok(ApiResponse<SubjectDTO>.Create(ResponseStatus.SubjectRetriveSuccessfully, item));
+            var response = ApiResponse<SubjectDTO>.Create(ResponseStatus.SubjectRetriveSuccessfully, item);
+            return StatusCode(response.StatusCodes, response);
         }
 
         [HttpPost]

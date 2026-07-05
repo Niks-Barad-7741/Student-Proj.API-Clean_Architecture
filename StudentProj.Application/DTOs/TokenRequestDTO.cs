@@ -13,6 +13,6 @@ namespace StudentProj.Application.DTOs
         public string AccessToken { get; set; }
 
         [Required]
-        public string RefereshToken { get; set; }
+        public string RefreshToken { get; set; }
     }
 }

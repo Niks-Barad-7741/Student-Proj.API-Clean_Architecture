@@ -13,7 +13,7 @@ namespace StudentProj.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class PermissionsController : Controller
+    public class PermissionsController : ControllerBase
     {
         private readonly IPermissionService _service;
         private readonly IMenuService _menuService;
@@ -39,7 +39,8 @@ namespace StudentProj.API.Controllers
         {
             var perm = await _service.GetPermissionByIdAsync(id);
             if (perm == null) return NotFound(ApiResponse<object>.Create(ResponseStatus.PermissionNotFound));
-            return Ok(ApiResponse<PermissionDTO>.Create(ResponseStatus.PermissionRetriveSuccessfully, perm));
+            var response = ApiResponse<PermissionDTO>.Create(ResponseStatus.PermissionRetriveSuccessfully, perm);
+            return StatusCode(response.StatusCodes, response);
         }
 
         [HttpPost]
@@ -121,8 +122,8 @@ namespace StudentProj.API.Controllers
 
             if (notFound.Count == pNames.Length)
                 return BadRequest(ApiResponse<object>.Create(ResponseStatus.BadRequest, $"None of the permissions were found: {string.Join(", ", notFound)}"));
-
-            return Ok(ApiResponse<object>.SuccessResponse("Permission revoked successfully"));
+            var response = ApiResponse<object>.Create(ResponseStatus.PermissionAssignedSuccessfully);
+            return StatusCode(response.StatusCodes, response);
         }
     }
 }

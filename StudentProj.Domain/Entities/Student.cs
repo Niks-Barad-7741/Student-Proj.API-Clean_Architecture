@@ -36,9 +36,9 @@ namespace StudentProj.Domain.Entities
         public bool IsDeleted { get; set; } = false;
 
         public DateTime? DeletedAt { get; set; }
-        public string? RefereshToken { get; set; }
+        public string? RefreshToken { get; set; }
 
-        public DateTime? RefereshTokenExpiryTime { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
 
         // Audit Columns (Option A - Appended at the end of the table)
         public DateTime CreatedAt { get; set; } = DateTimeHelper.GetIndianStandardTime();

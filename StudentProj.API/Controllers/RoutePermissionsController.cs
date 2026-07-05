@@ -12,7 +12,7 @@ namespace StudentProj.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class RoutePermissionsController : Controller
+    public class RoutePermissionsController : ControllerBase
     {
         private readonly IRoutePermissionService _service;
 
@@ -34,7 +34,8 @@ namespace StudentProj.API.Controllers
         {
             var item = await _service.GetRoutePermissionByIdAsync(id);
             if (item == null) return NotFound(ApiResponse<object>.Create(ResponseStatus.PermissionNotFound));
-            return Ok(ApiResponse<RoutePermissionDTO>.SuccessResponse(item, "Route Permission retrieved successfully"));
+            var response = ApiResponse<RoutePermissionDTO>.Create(ResponseStatus.PermissionRetriveSuccessfully, item);
+            return StatusCode(response.StatusCodes, response);
         }
 
         [HttpPost]

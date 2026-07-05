@@ -91,8 +91,8 @@ namespace StudentProj.API.Controllers
             var refreshToken = _jwtService.GenerateRefreshToken();
             var permissions = await _loginService.GetStudentPermissionAsync(student.Id);
 
-            student.RefereshToken = refreshToken;
-            student.RefereshTokenExpiryTime = DateTimeHelper.GetIndianStandardTime().AddDays(7);
+            student.RefreshToken = refreshToken;
+            student.RefreshTokenExpiryTime = DateTimeHelper.GetIndianStandardTime().AddDays(7);
             
             await _studentRepo.UpdateStudentasync(student.Id, student);
 
@@ -132,8 +132,8 @@ namespace StudentProj.API.Controllers
             var refreshToken = _jwtService.GenerateRefreshToken();
             var permission = await _loginService.GetStudentPermissionAsync(student.Id);
 
-            student.RefereshToken = refreshToken;
-            student.RefereshTokenExpiryTime = DateTimeHelper.GetIndianStandardTime().AddDays(7);
+            student.RefreshToken = refreshToken;
+            student.RefreshTokenExpiryTime = DateTimeHelper.GetIndianStandardTime().AddDays(7);
             await _studentRepo.UpdateStudentasync(student.Id, student);
 
             await _loggingService.LogActivityAsync(student.Name, student.Email, "Login Succeeded", HttpContext);
@@ -251,7 +251,7 @@ namespace StudentProj.API.Controllers
         [HttpPost("refresh")]
         public async Task<ActionResult> Refresh([FromBody] TokenRequestDTO dto)
         {
-            if (string.IsNullOrEmpty(dto.AccessToken) || string.IsNullOrEmpty(dto.RefereshToken))
+            if (string.IsNullOrEmpty(dto.AccessToken) || string.IsNullOrEmpty(dto.RefreshToken))
             {
                 var error = ApiResponse<object>.Create(ResponseStatus.BadRequest, "Invalid client request.");
                 return StatusCode(error.StatusCodes, error);
@@ -266,7 +266,7 @@ namespace StudentProj.API.Controllers
 
             var emailClaim = principal.FindFirst("Email") ?? principal.FindFirst(ClaimTypes.Email);
             var student = await _login.GetStudentbyemailasync(emailClaim.Value);
-            if (student == null || student.RefereshToken != dto.RefereshToken || student.RefereshTokenExpiryTime <= DateTimeHelper.GetIndianStandardTime())
+            if (student == null || student.RefreshToken != dto.RefreshToken || student.RefreshTokenExpiryTime <= DateTimeHelper.GetIndianStandardTime())
             {
                 var error = ApiResponse<object>.Create(ResponseStatus.BadRequest, "Invalid refresh token or token has expired.");
                 return StatusCode(error.StatusCodes, error);
@@ -276,8 +276,8 @@ namespace StudentProj.API.Controllers
             var newAccessToken = _jwtService.GenerateToken(student, roles);
             var newRefreshToken = _jwtService.GenerateRefreshToken();
 
-            student.RefereshToken = newRefreshToken;
-            student.RefereshTokenExpiryTime = DateTimeHelper.GetIndianStandardTime().AddDays(7);
+            student.RefreshToken = newRefreshToken;
+            student.RefreshTokenExpiryTime = DateTimeHelper.GetIndianStandardTime().AddDays(7);
             await _studentRepo.UpdateStudentasync(student.Id, student);
 
             var responseData = new LoginResponseDTO

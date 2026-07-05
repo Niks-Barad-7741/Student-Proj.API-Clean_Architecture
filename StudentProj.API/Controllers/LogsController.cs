@@ -12,7 +12,7 @@ namespace StudentProj.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class LogsController : Controller
+    public class LogsController : ControllerBase
     {
         private readonly ILogsService _service;
 

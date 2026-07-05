@@ -59,6 +59,7 @@ namespace StudentProj.Domain.Enums
         SubjectNotEnrolled,
         LogsRetriveSuccessfully,
         LogsNotFound,
+        MenuRetriveSuccessfully,
         // Failure/Validation Operations
         UserAlreadyExist,
         UserNotFound,
@@ -151,6 +152,7 @@ namespace StudentProj.Domain.Enums
 
             ResponseStatus.LogsRetriveSuccessfully => 200,
             ResponseStatus.LogsNotFound => 404,
+            ResponseStatus.MenuRetriveSuccessfully => 200,
             _ => 200
         };
 
@@ -228,6 +230,7 @@ namespace StudentProj.Domain.Enums
 
             ResponseStatus.LogsRetriveSuccessfully => ApiMessages.LogsRetriveSuccessfully,
             ResponseStatus.LogsNotFound => ApiMessages.LogsNotFound,
+            ResponseStatus.MenuRetriveSuccessfully => "Menu retrieved successfully",
 
             _ => status.ToString()
         };
