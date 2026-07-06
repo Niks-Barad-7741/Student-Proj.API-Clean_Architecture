@@ -8,6 +8,7 @@ namespace StudentProj.Application.Validators
         public RegisterValidator()
         {
             RuleFor(x => x.Name)
+                .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotNull().WithMessage("Name cannot be null")
                 .NotEmpty().WithMessage("Name is required")
                 .MinimumLength(2).WithMessage("Name must be at least 2 characters long")
@@ -18,6 +19,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Name cannot start or end with whitespace");
 
             RuleFor(x => x.Email)
+                .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Email is Required")
                 .EmailAddress()
@@ -26,6 +28,7 @@ namespace StudentProj.Application.Validators
                 .NotNull()
                 .WithMessage("Email cannot be null");
             RuleFor(x => x.Address)
+                .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Address is required")
                 .NotNull()
@@ -33,6 +36,7 @@ namespace StudentProj.Application.Validators
                 .MaximumLength(200);
 
             RuleFor(x => x.Phone)
+                .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Phone number is required")
                 .NotNull()
@@ -42,6 +46,7 @@ namespace StudentProj.Application.Validators
 
 
             RuleFor(x => x.Password)
+                .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Password is Required")
                 .MinimumLength(6)

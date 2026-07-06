@@ -10,12 +10,20 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Generate a unique log file name for this specific application run
+string logFileName = $"Logs/log-{DateTime.Now:yyyyMMdd_HHmmss}.txt";
+
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+    // Console gets ALL logs (including Microsoft internal logs)
+    .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+    // File ONLY gets custom logs (Microsoft internal logs are filtered out)
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(e => e.MessageTemplate.Text.StartsWith("Name:"))
+        .WriteTo.File(logFileName, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+    )
     .CreateLogger();
 
 builder.Host.UseSerilog();

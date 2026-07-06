@@ -97,6 +97,13 @@ namespace StudentProj.API.Middleware
                 return;
             }
             await _next(context);
+
+            if (context.Response.StatusCode >= 200 && context.Response.StatusCode < 300)
+            {
+                var name = context.User.FindFirst("Name")?.Value ?? context.User.Identity?.Name;
+                var email = context.User.FindFirst("Email")?.Value ?? context.User.FindFirst(ClaimTypes.Email)?.Value;
+                await loggingService.LogActivityAsync(name, email, $"API Access: {context.Response.StatusCode}", context);
+            }
         }
         private string NormalizePath(string path)
         {
@@ -105,13 +112,8 @@ namespace StudentProj.API.Middleware
         }
         private string NormalizeControllerToMenuName(string controllerName)
         {
-            if (string.IsNullOrEmpty(controllerName)) return "Unknown";
-
-            if (controllerName.Equals("Student", StringComparison.OrdinalIgnoreCase)) return "Students";
-            if (controllerName.Equals("Role", StringComparison.OrdinalIgnoreCase)) return "Roles";
-            if (controllerName.Equals("Menu", StringComparison.OrdinalIgnoreCase)) return "Menus";
-            if (controllerName.Equals("Permission", StringComparison.OrdinalIgnoreCase) || controllerName.Equals("Permissions", StringComparison.OrdinalIgnoreCase)) return "Permissions";
-            return controllerName;
+            if (string.IsNullOrEmpty(controllerName)) return "unknown";
+            return controllerName.ToLowerInvariant();
         }
         private async Task<List<RoutePermissionDTO>> GetCachedRoutePermissionsAsync(IRoutePermissionService routePermissionService)
         {

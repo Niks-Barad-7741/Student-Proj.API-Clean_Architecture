@@ -30,11 +30,17 @@ namespace StudentProj.Application
             services.AddScoped<IValidator<StudentDTO>, StudentValidator>();
             services.AddScoped<IValidator<RegisterDTO>, RegisterValidator>();
             services.AddScoped<IValidator<LoginDTO>, LoginValidator>();
+            services.AddScoped<IValidator<ForgotPasswordDTO>, ForgotPasswordValidator>();
+            services.AddScoped<IValidator<ResetPasswordDTO>, ResetPasswordValidator>();
+            services.AddScoped<IValidator<TokenRequestDTO>, TokenRequestValidator>();
             services.AddScoped<IValidator<AssignRoleDTO>, AssignRoleValidator>();
             services.AddScoped<IValidator<RoleDTO>, RoleValidator>();
+            services.AddScoped<IValidator<CreateRoleDTO>, CreateRoleValidator>();
             services.AddScoped<IValidator<PermissionDTO>, PermissionValidator>();
+            services.AddScoped<IValidator<CreatePermissionDTO>, CreatePermissionValidator>();
             services.AddScoped<IValidator<RoutePermissionDTO>, RoutePermissionValidator>();
             services.AddScoped<IValidator<MenuDTO>, MenuValidator>();
+            services.AddScoped<IValidator<CreateMenuDTO>, CreateMenuValidator>();
             services.AddScoped<IValidator<AssignPermissionDTO>, AssignPermissionValidator>();
             services.AddScoped<IValidator<CreateCourseDTO>, CourseValidator>();
             services.AddScoped<IValidator<UpdateCourseDTO>, UpdateCourseValidator>();

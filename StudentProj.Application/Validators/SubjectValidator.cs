@@ -8,18 +8,20 @@ namespace StudentProj.Application.Validators
         public SubjectValidator()
         {
             RuleFor(x => x.SubjectName)
+
                 .NotEmpty()
                 .WithMessage("Subject Name is required.")
                 .MinimumLength(2)
                 .WithMessage("Subject Name must be at least 2 characters.")
                 .MaximumLength(50)
                 .WithMessage("Subject Name cannot exceed 50 characters.")
-                .Matches(@"^[A-Za-z0-9\s\-_]+$")
+                .Matches(@"^[a-zA-Z\s\-]+$")
                 .WithMessage("Subject Name can only contain letters, numbers, spaces, hyphens, and underscores.")
                 .NotEqual("string", StringComparer.OrdinalIgnoreCase)
                 .WithMessage("Subject Name cannot be the default word 'string'.");
 
             RuleFor(x => x.SubjectCode)
+
                 .GreaterThan(0)
                 .WithMessage("Subject Code must be greater than 0.");
 
@@ -34,18 +36,20 @@ namespace StudentProj.Application.Validators
         public UpdateSubjectValidator()
         {
             RuleFor(x => x.SubjectName)
+
                 .NotEmpty()
                 .WithMessage("Subject Name is required.")
                 .MinimumLength(2)
                 .WithMessage("Subject Name must be at least 2 characters.")
                 .MaximumLength(50)
                 .WithMessage("Subject Name cannot exceed 50 characters.")
-                .Matches(@"^[A-Za-z0-9\s\-_]+$")
+                .Matches(@"^[a-zA-Z\s\-]+$")
                 .WithMessage("Subject Name can only contain letters, numbers, spaces, hyphens, and underscores.")
                 .NotEqual("string", StringComparer.OrdinalIgnoreCase)
                 .WithMessage("Subject Name cannot be the default word 'string'.");
 
             RuleFor(x => x.SubjectCode)
+
                 .GreaterThan(0)
                 .WithMessage("Subject Code must be greater than 0.");
             

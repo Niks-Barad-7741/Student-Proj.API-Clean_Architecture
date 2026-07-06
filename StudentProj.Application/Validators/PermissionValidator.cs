@@ -8,11 +8,12 @@ namespace StudentProj.Application.Validators
         public PermissionValidator()
         {
             RuleFor(x => x.PermissionName)
+                .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Permission name is required")
                 .NotNull()
                 .WithMessage("Permission name cannot be null")
-                .Matches(@"^(create|read|update|delete)(-[a-zA-Z]+)?$")
+                .Matches(@"^[a-zA-Z\-]+$")
                 .WithMessage("Permission must be create, read, update, or delete (with optional suffix like -only)");
         }
     }
@@ -22,11 +23,12 @@ namespace StudentProj.Application.Validators
         public CreatePermissionValidator()
         {
             RuleFor(x => x.PermissionName)
+                .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Permission name is required")
                 .NotNull()
                 .WithMessage("Permission name cannot be null")
-                .Matches(@"^(create|read|update|delete)(-[a-zA-Z]+)?$")
+                .Matches(@"^[a-zA-Z\-]+$")
                 .WithMessage("Permission must be create, read, update, or delete (with optional suffix like -only)");
         }
     }

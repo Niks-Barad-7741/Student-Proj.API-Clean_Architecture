@@ -5,6 +5,7 @@ using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
 using StudentProj.Domain.Enums;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace StudentProj.API.Controllers
@@ -34,6 +35,11 @@ namespace StudentProj.API.Controllers
         public async Task<IActionResult> GetByStudentId(int studentId)
         {
             var items = await _service.GetStudentByIdAsync(studentId);
+            if (items == null || !items.Any())
+            {
+                var errorResponse = ApiResponse<object>.Create(ResponseStatus.NotFound, "No enrollments found for this student.");
+                return StatusCode(errorResponse.StatusCodes, errorResponse);
+            }
             var response = ApiResponse<IEnumerable<EnrollmentDTO>>.Create(ResponseStatus.EnrollmentRetriveSuccessfully, items);
             return StatusCode(response.StatusCodes, response);
         }

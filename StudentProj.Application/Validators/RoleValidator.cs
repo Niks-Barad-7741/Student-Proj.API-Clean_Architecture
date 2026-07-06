@@ -8,6 +8,7 @@ namespace StudentProj.Application.Validators
         public RoleValidator()
         {
             RuleFor(x => x.RoleName)
+                .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Role name is required!")
                 .NotNull()
@@ -27,6 +28,7 @@ namespace StudentProj.Application.Validators
         public CreateRoleValidator()
         {
             RuleFor(x => x.RoleName)
+                .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Role name is required!")
                 .NotNull()
