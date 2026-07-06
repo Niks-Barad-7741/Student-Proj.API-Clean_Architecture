@@ -7,3 +7,4 @@ namespace StudentProj.Application.DTOs
         public string MenuName { get; set; }
     }
 }
+

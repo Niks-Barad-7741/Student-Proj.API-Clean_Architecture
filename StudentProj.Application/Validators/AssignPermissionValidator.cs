@@ -8,6 +8,7 @@ namespace StudentProj.Application.Validators
         public AssignPermissionValidator()
         {
             RuleFor(x => x.RoleName)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotNull().WithMessage("Role name cannot be null")
                 .NotEmpty().WithMessage("Role name is required");
@@ -25,3 +26,4 @@ namespace StudentProj.Application.Validators
         }
     }
 }
+

@@ -8,6 +8,7 @@ namespace StudentProj.Application.Validators
         public SubjectValidator()
         {
             RuleFor(x => x.SubjectName)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
 
                 .NotEmpty()
                 .WithMessage("Subject Name is required.")
@@ -36,6 +37,7 @@ namespace StudentProj.Application.Validators
         public UpdateSubjectValidator()
         {
             RuleFor(x => x.SubjectName)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
 
                 .NotEmpty()
                 .WithMessage("Subject Name is required.")
@@ -59,3 +61,4 @@ namespace StudentProj.Application.Validators
         }
     }
 }
+

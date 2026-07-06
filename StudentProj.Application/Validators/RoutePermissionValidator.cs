@@ -10,6 +10,7 @@ namespace StudentProj.Application.Validators
         public RoutePermissionValidator()
         {
             RuleFor(x => x.HttpMethod)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty().WithMessage("HTTP Method is required!")
                 .NotNull().WithMessage("HTTP Method cannot be null!")
@@ -49,3 +50,4 @@ namespace StudentProj.Application.Validators
         }
     }
 }
+

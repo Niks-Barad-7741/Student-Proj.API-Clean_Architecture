@@ -8,6 +8,7 @@ namespace StudentProj.Application.Validators
         public StudentValidator()
         {
             RuleFor(x => x.Name)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotNull().WithMessage("Name cannot be null")
                 .NotEmpty().WithMessage("Name is required")
@@ -24,7 +25,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Email is Required")
                 .EmailAddress()
                 .WithMessage("Invalid Email Address")
-                .Matches(@"^[a-zA-Z0-9._%+-]+@gmail\.com$")
+                .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
                 .WithMessage("Email must be a valid Gmail address");
 
             RuleFor(x => x.Address)
@@ -48,3 +49,4 @@ namespace StudentProj.Application.Validators
         }
     }
 }
+

@@ -8,6 +8,7 @@ namespace StudentProj.Application.Validators
         public LoginValidator()
         {
             RuleFor(x => x.Email)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Email is Required")
@@ -21,7 +22,9 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Password is Required")
                 .MinimumLength(6)
                 //.WithMessage("Password must be at least 6 characters long")
-                .MaximumLength(100);
+                .MaximumLength(20).Must(p => p == null || p.Trim() == p).WithMessage("Password cannot start or end with a space.");
         }
     }
 }
+
+

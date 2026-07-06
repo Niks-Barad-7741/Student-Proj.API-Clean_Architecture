@@ -8,6 +8,7 @@ namespace StudentProj.Application.Validators
         public CourseValidator()
         {
             RuleFor(x => x.CourseName)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Course Name is required.")
@@ -36,6 +37,7 @@ namespace StudentProj.Application.Validators
         public UpdateCourseValidator()
         {
             RuleFor(x => x.CourseName)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Course Name is required.")
@@ -59,3 +61,4 @@ namespace StudentProj.Application.Validators
         }
     }
 }
+

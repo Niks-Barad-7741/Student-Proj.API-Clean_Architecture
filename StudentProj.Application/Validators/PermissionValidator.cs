@@ -8,6 +8,7 @@ namespace StudentProj.Application.Validators
         public PermissionValidator()
         {
             RuleFor(x => x.PermissionName)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Permission name is required")
@@ -23,6 +24,7 @@ namespace StudentProj.Application.Validators
         public CreatePermissionValidator()
         {
             RuleFor(x => x.PermissionName)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Permission name is required")
@@ -33,3 +35,4 @@ namespace StudentProj.Application.Validators
         }
     }
 }
+

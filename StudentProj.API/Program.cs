@@ -49,6 +49,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new StudentProj.API.Converters.TrimStringConverter());
+    })
     .ConfigureApiBehaviorOptions(options =>
     {
         options.InvalidModelStateResponseFactory = context =>
@@ -124,3 +128,4 @@ app.UseMiddleware<StudentProj.API.Middleware.DynamicRbacMiddleware>();
 app.MapControllers();
 
 app.Run();
+

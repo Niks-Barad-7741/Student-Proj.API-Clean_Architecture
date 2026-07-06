@@ -8,6 +8,7 @@ namespace StudentProj.Application.Validators
         public MenuValidator()
         {
             RuleFor(x => x.MenuName)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotNull().WithMessage("Menu name cannot be null")
                 .NotEmpty().WithMessage("Menu name is required")
@@ -37,6 +38,7 @@ namespace StudentProj.Application.Validators
         public CreateMenuValidator()
         {
             RuleFor(x => x.MenuName)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotNull().WithMessage("Menu name cannot be null")
                 .NotEmpty().WithMessage("Menu name is required")
@@ -61,3 +63,4 @@ namespace StudentProj.Application.Validators
         }
     }
 }
+

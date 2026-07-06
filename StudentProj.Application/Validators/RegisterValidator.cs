@@ -8,6 +8,7 @@ namespace StudentProj.Application.Validators
         public RegisterValidator()
         {
             RuleFor(x => x.Name)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotNull().WithMessage("Name cannot be null")
                 .NotEmpty().WithMessage("Name is required")
@@ -19,6 +20,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Name cannot start or end with whitespace");
 
             RuleFor(x => x.Email)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Email is Required")
@@ -28,6 +30,7 @@ namespace StudentProj.Application.Validators
                 .NotNull()
                 .WithMessage("Email cannot be null");
             RuleFor(x => x.Address)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Address is required")
@@ -36,6 +39,7 @@ namespace StudentProj.Application.Validators
                 .MaximumLength(200);
 
             RuleFor(x => x.Phone)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Phone number is required")
@@ -45,15 +49,19 @@ namespace StudentProj.Application.Validators
                 .MaximumLength(10);
 
 
-            RuleFor(x => x.Password)
+                        RuleFor(x => x.Password)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Password is Required")
-                .MinimumLength(6)
-                .WithMessage("Password must be at least 6 characters long")
-                .MaximumLength(20);
+                .MinimumLength(8)
+                .WithMessage("Password must be at least 8 characters long")
+                .MaximumLength(20)
+                .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$")
+                .WithMessage("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
 
         }
 
     }
 }
+

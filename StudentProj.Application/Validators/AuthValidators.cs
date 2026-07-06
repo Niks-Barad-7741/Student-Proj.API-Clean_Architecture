@@ -8,6 +8,7 @@ namespace StudentProj.Application.Validators
         public ForgotPasswordValidator()
         {
             RuleFor(x => x.Email)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty().WithMessage("Email is required.")
                 .EmailAddress().WithMessage("Invalid email format.")
@@ -20,6 +21,7 @@ namespace StudentProj.Application.Validators
         public ResetPasswordValidator()
         {
             RuleFor(x => x.Email)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty().WithMessage("Email is required.")
                 .EmailAddress().WithMessage("Invalid email format.")
@@ -53,3 +55,5 @@ namespace StudentProj.Application.Validators
         }
     }
 }
+
+
