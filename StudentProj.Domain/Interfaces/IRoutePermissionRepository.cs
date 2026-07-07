@@ -2,7 +2,7 @@ using StudentProj.Domain.Entities;
 
 namespace StudentProj.Domain.Interfaces
 {
-    public interface IRoutePermissionRepository
+    public interface IRoutePermissionRepository : IGenericRepository<RoutePermissions>
     {
         Task<List<RoutePermissions>> GetAllRoutePermissionsAsync();
         Task<RoutePermissions?> GetRoutePermissionByIdAsync(int id);

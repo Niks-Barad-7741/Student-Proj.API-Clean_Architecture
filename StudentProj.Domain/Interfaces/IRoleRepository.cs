@@ -2,7 +2,7 @@ using StudentProj.Domain.Entities;
 
 namespace StudentProj.Domain.Interfaces
 {
-    public interface IRoleRepository
+    public interface IRoleRepository : IGenericRepository<Roles>
     {
         // get all roles
         Task<List<Roles>> GetAllRolesAsync();

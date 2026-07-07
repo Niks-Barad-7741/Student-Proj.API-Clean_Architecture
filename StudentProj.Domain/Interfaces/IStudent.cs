@@ -10,7 +10,7 @@ namespace StudentProj.Domain.Interfaces
         Task<bool> UpdateStudentasync(int id, Student student);
         Task<IEnumerable<Student>> Getstudentbynameasync(string name);
         Task<Student> GetStudentbyemailasync(string email);
-        Task<bool> DeleteStudentasync(Student student, int? deletedBy = null);
+        Task<bool> DeleteStudentasync(Student student, string? deletedBy = null);
         Task<int> UpsertStudentAsync(Student student);
         Task<Student> GetStudentByPhoneAsync(string phone);
     }

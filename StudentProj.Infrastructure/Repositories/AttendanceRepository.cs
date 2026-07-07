@@ -15,6 +15,7 @@ namespace StudentProj.Infrastructure.Repositories
         public async Task<IEnumerable<Attendance>> GetBySubjectIdAsync(int subjectId, DateTime? date)
         {
             var attendance = await _dbContext.Attendance
+            .IgnoreQueryFilters()
             .Include(n => n.Student)
             .Include(n => n.Subject)
             .Where(n =>

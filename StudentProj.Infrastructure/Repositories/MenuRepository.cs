@@ -11,18 +11,15 @@ using System.Threading.Tasks;
 
 namespace StudentProj.Infrastructure.Repositories
 {
-    public class MenuRepository : IMenuRepository
+    public class MenuRepository : GenericRepository<Menu>, IMenuRepository
     {
-        private readonly StudentDbcontext _dbcontext;
-
-        public MenuRepository(StudentDbcontext dbcontext)
+        public MenuRepository(StudentDbcontext dbcontext) : base(dbcontext)
         {
-            _dbcontext = dbcontext;
         }
 
         public async Task<Menu> CreateMenuAsync(Menu menu)
         {
-            var existing = await _dbcontext.Menus
+            var existing = await _dbContext.Menus.IgnoreQueryFilters()
                 .FirstOrDefaultAsync(m => m.MenuName.ToLower() == menu.MenuName.ToLower());
 
             if (existing != null)
@@ -31,14 +28,14 @@ namespace StudentProj.Infrastructure.Repositories
                 {
                     existing.IsDeleted = false;
                     existing.DeletedAt = null;
-                    _dbcontext.Menus.Update(existing);
-                    await _dbcontext.SaveChangesAsync();
+                    _dbContext.Menus.Update(existing);
+                    await _dbContext.SaveChangesAsync();
                 }
                 return existing;
             }
 
-            await _dbcontext.Menus.AddAsync(menu);
-            await _dbcontext.SaveChangesAsync();
+            await _dbContext.Menus.AddAsync(menu);
+            await _dbContext.SaveChangesAsync();
             return menu;
         }
 
@@ -49,40 +46,37 @@ namespace StudentProj.Infrastructure.Repositories
 
             menu.IsDeleted = true;
             menu.DeletedAt = DateTimeHelper.GetIndianStandardTime();
-            _dbcontext.Menus.Update(menu);
-            await _dbcontext.SaveChangesAsync();
+            _dbContext.Menus.Update(menu);
+            await _dbContext.SaveChangesAsync();
             return true;
         }
 
         public async Task<List<Menu>> GetAllMenusAsync()
         {
-            return await _dbcontext.Menus
-                .Where(m => !m.IsDeleted)
-                .ToListAsync();
+            var menus = await base.GetAllAsync();
+            return menus.ToList();
         }
 
         public async Task<Menu?> GetMenuByIdAsync(int id)
         {
-            return await _dbcontext.Menus
-                .FirstOrDefaultAsync(m => m.Id == id && !m.IsDeleted);
+            return await base.GetAsync(m => m.Id == id);
         }
 
         public async Task<Menu?> GetMenuByNameAsync(string name)
         {
-            return await _dbcontext.Menus
-                .FirstOrDefaultAsync(m => m.MenuName.ToLower() == name.ToLower() && !m.IsDeleted);
+            return await base.GetAsync(m => m.MenuName.ToLower() == name.ToLower());
         }
 
         public async Task<bool> MenuExistsAsync(string name)
         {
-            return await _dbcontext.Menus
+            return await _dbContext.Menus
                 .AnyAsync(m => m.MenuName.ToLower() == name.ToLower() && !m.IsDeleted);
         }
 
         public async Task<bool> UpdateMenuAsync(int id, Menu menu)
         {
-            _dbcontext.Menus.Update(menu);
-            await _dbcontext.SaveChangesAsync();
+            _dbContext.Menus.Update(menu);
+            await _dbContext.SaveChangesAsync();
             return menu.Id == id;
         }
 
@@ -92,9 +86,9 @@ namespace StudentProj.Infrastructure.Repositories
             {
                 return await GetAllMenusAsync();
             }
-            return await _dbcontext.StudentRoles
+            return await _dbContext.StudentRoles
                 .Where(n => n.StudentId == userId && !n.IsDeleted && !n.Role.IsDeleted)
-                .SelectMany(n => _dbcontext.RolePermissions
+                .SelectMany(n => _dbContext.RolePermissions
                     .Where(nb => nb.RoleId == n.RoleId
                             && !nb.IsDeleted
                             && !nb.Permission.IsDeleted

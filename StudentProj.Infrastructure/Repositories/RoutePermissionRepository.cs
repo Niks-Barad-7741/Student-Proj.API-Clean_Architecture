@@ -6,16 +6,13 @@ using StudentProj.Data;
 
 namespace StudentProj.Infrastructure.Repositories
 {
-    public class RoutePermissionRepository : IRoutePermissionRepository
+    public class RoutePermissionRepository : GenericRepository<RoutePermissions>, IRoutePermissionRepository
     {
-        private readonly StudentDbcontext _dbcontext;
-        // private readonly IMemoryCache _cache;
         private readonly IDistributedCache _cache;
         private const string RoutePermissionsCacheKey = "RoutePermissions_All";
 
-        public RoutePermissionRepository(StudentDbcontext dbcontext, IDistributedCache cache)
+        public RoutePermissionRepository(StudentDbcontext dbcontext, IDistributedCache cache) : base(dbcontext)
         {
-            _dbcontext = dbcontext;
             _cache = cache;
         }
 
@@ -27,18 +24,19 @@ namespace StudentProj.Infrastructure.Repositories
 
         public async Task<List<RoutePermissions>> GetAllRoutePermissionsAsync()
         {
-            return await _dbcontext.RoutePermissions.ToListAsync();
+            var perms = await base.GetAllAsync();
+            return perms.ToList();
         }
 
         public async Task<RoutePermissions?> GetRoutePermissionByIdAsync(int id)
         {
-            return await _dbcontext.RoutePermissions.FindAsync(id);
+            return await base.GetAsync(rp => rp.Id == id);
         }
 
         public async Task<RoutePermissions> CreateRoutePermissionAsync(RoutePermissions routePermission)
         {
-            await _dbcontext.RoutePermissions.AddAsync(routePermission);
-            await _dbcontext.SaveChangesAsync();
+            await _dbContext.RoutePermissions.AddAsync(routePermission);
+            await _dbContext.SaveChangesAsync();
             // EvictCache();
             await EvictCacheAsync();
             return routePermission;
@@ -46,8 +44,8 @@ namespace StudentProj.Infrastructure.Repositories
 
         public async Task<bool> UpdateRoutePermissionAsync(int id, RoutePermissions routePermission)
         {
-            _dbcontext.RoutePermissions.Update(routePermission);
-            var updated = await _dbcontext.SaveChangesAsync();
+            _dbContext.RoutePermissions.Update(routePermission);
+            var updated = await _dbContext.SaveChangesAsync();
             if (updated > 0)
             {
                 // EvictCache();
@@ -62,8 +60,8 @@ namespace StudentProj.Infrastructure.Repositories
             var entity = await GetRoutePermissionByIdAsync(id);
             if (entity == null) return false;
 
-            _dbcontext.RoutePermissions.Remove(entity);
-            var deleted = await _dbcontext.SaveChangesAsync();
+            _dbContext.RoutePermissions.Remove(entity);
+            var deleted = await _dbContext.SaveChangesAsync();
             if (deleted > 0)
             {
                 // EvictCache();
@@ -77,7 +75,7 @@ namespace StudentProj.Infrastructure.Repositories
         {
             // Normalize path pattern (trim '/' and lower-case) to check duplicate
             string normPath = pathPattern.Trim('/').ToLowerInvariant();
-            var existing = await _dbcontext.RoutePermissions.ToListAsync();
+            var existing = await _dbContext.RoutePermissions.ToListAsync();
             return existing.Any(rp =>
                 rp.HttpMethod.Equals(httpMethod, StringComparison.OrdinalIgnoreCase) &&
                 rp.PathPattern.Trim('/').ToLowerInvariant() == normPath);

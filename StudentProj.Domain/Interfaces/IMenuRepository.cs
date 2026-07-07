@@ -2,7 +2,7 @@ using StudentProj.Domain.Entities;
 
 namespace StudentProj.Domain.Interfaces
 {
-    public interface IMenuRepository
+    public interface IMenuRepository : IGenericRepository<Menu>
     {
         Task<List<Menu>> GetAllMenusAsync();
         Task<Menu?> GetMenuByIdAsync(int id);

@@ -29,16 +29,16 @@ namespace StudentProj.Infrastructure.Repositories
             return student.Id;
         }
 
-        public async Task<bool> DeleteStudentasync(Student student, int? deletedBy = null)
+        public async Task<bool> DeleteStudentasync(Student student, string? deletedBy = null)
         {
             //_dbContext.Student.Remove(student);
             //await _dbContext.SaveChangesAsync();
             //return true;
             student.IsDeleted = true;
             student.DeletedAt = DateTimeHelper.GetIndianStandardTime();
-            if (deletedBy.HasValue)
+            if (!string.IsNullOrEmpty(deletedBy))
             {
-                student.DeletedBy = deletedBy.Value.ToString();
+                student.DeletedBy = deletedBy;
             }
             _dbContext.Student.Update(student);
             await _dbContext.SaveChangesAsync();

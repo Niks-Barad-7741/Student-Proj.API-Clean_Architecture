@@ -8,20 +8,18 @@ using StudentProj.Domain.Common;
 
 namespace StudentProj.Infrastructure.Repositories
 {
-    public class PermissionRepository : IPermissionRepository
+    public class PermissionRepository : GenericRepository<Permissions>, IPermissionRepository
     {
-        private readonly StudentDbcontext _dbcontext;
         private readonly IDistributedCache _cache;
 
-        public PermissionRepository(StudentDbcontext dbcontext, IDistributedCache cache)
+        public PermissionRepository(StudentDbcontext dbcontext, IDistributedCache cache) : base(dbcontext)
         {
-            _dbcontext = dbcontext;
             _cache = cache;
         }
 
         public async Task<bool> HasPermissionAsync(int userId, string action, string menuName)
         {
-            return await _dbcontext.RolePermissions
+            return await _dbContext.RolePermissions
                 .Where(rp => !rp.IsDeleted
                     && !rp.Role.IsDeleted
                     && !rp.Permission.IsDeleted
@@ -29,14 +27,14 @@ namespace StudentProj.Infrastructure.Repositories
                     )
                 .Where(rp => rp.Permission.PermissionName.ToLower() == action.ToLower()
                           && rp.Menu.MenuName.ToLower() == menuName.ToLower())
-                .Where(rp => _dbcontext.StudentRoles
+                .Where(rp => _dbContext.StudentRoles
                     .Any(sr => sr.StudentId == userId && sr.RoleId == rp.RoleId && !sr.IsDeleted))
                 .AnyAsync();
         }
 
         private async Task ClearRoleCacheAsync(int roleId)
         {
-            var role = await _dbcontext.Roles.FindAsync(roleId);
+            var role = await _dbContext.Roles.FindAsync(roleId);
             if (role != null)
             {
                 await _cache.RemoveAsync($"Permissions_Role_{role.RoleName}");
@@ -46,7 +44,7 @@ namespace StudentProj.Infrastructure.Repositories
         // New Helper: Get Permission IDs to cascade down (for assign) or up (for revoke) dynamically
         private async Task<List<int>> GetCascadePermissionIdsAsync(int permissionId, bool isAssign)
         {
-            var permissions = await _dbcontext.Permissions.Where(p => !p.IsDeleted).ToListAsync();
+            var permissions = await _dbContext.Permissions.Where(p => !p.IsDeleted).ToListAsync();
             var dict = permissions.ToDictionary(p => p.PermissionName.ToLower(), p => p.Id);
 
             var targetPerm = permissions.FirstOrDefault(p => p.Id == permissionId);
@@ -85,7 +83,7 @@ namespace StudentProj.Infrastructure.Repositories
         // New Helper: Find fine-grained menu
         private async Task<int?> FindFineGrainedMenuIdAsync(string parentMenuName, int permissionId)
         {
-            var permission = await _dbcontext.Permissions.FirstOrDefaultAsync(p => p.Id == permissionId && !p.IsDeleted);
+            var permission = await _dbContext.Permissions.FirstOrDefaultAsync(p => p.Id == permissionId && !p.IsDeleted);
             if (permission == null) return null;
 
             string action = permission.PermissionName.ToLower();
@@ -94,14 +92,14 @@ namespace StudentProj.Infrastructure.Repositories
 
             // Try {action}-{parentMenuName} e.g. create-course
             string exactName = $"{action}-{parentMenuName}".ToLower();
-            var menu = await _dbcontext.Menus.FirstOrDefaultAsync(m => m.MenuName.ToLower() == exactName && !m.IsDeleted);
+            var menu = await _dbContext.Menus.FirstOrDefaultAsync(m => m.MenuName.ToLower() == exactName && !m.IsDeleted);
             if (menu != null) return menu.Id;
 
             // Try {action}-{singular} e.g. create-student (from students)
             if (parentMenuName.EndsWith("s", StringComparison.OrdinalIgnoreCase))
             {
                 string singularName = $"{action}-{parentMenuName.Substring(0, parentMenuName.Length - 1)}".ToLower();
-                var menuSingular = await _dbcontext.Menus.FirstOrDefaultAsync(m => m.MenuName.ToLower() == singularName && !m.IsDeleted);
+                var menuSingular = await _dbContext.Menus.FirstOrDefaultAsync(m => m.MenuName.ToLower() == singularName && !m.IsDeleted);
                 if (menuSingular != null) return menuSingular.Id;
             }
 
@@ -111,7 +109,7 @@ namespace StudentProj.Infrastructure.Repositories
         // Extracted single assign logic
         private async Task<bool> AssignSinglePermissionAsync(int roleId, int permissionId, int? menuId)
         {
-            var existing = await _dbcontext.RolePermissions
+            var existing = await _dbContext.RolePermissions.IgnoreQueryFilters()
                 .FirstOrDefaultAsync(rp => rp.RoleId == roleId
                                         && rp.PermissionId == permissionId
                                         && rp.MenuId == menuId);
@@ -122,7 +120,7 @@ namespace StudentProj.Infrastructure.Repositories
 
                 existing.IsDeleted = false;
                 existing.DeletedAt = null;
-                _dbcontext.RolePermissions.Update(existing);
+                _dbContext.RolePermissions.Update(existing);
                 return true;
             }
 
@@ -132,7 +130,7 @@ namespace StudentProj.Infrastructure.Repositories
                 PermissionId = permissionId,
                 MenuId = menuId
             };
-            await _dbcontext.RolePermissions.AddAsync(rolePermission);
+            await _dbContext.RolePermissions.AddAsync(rolePermission);
             return true;
         }
 
@@ -148,7 +146,7 @@ namespace StudentProj.Infrastructure.Repositories
             // 2. Cascade Logic
             if (nullableMenuId.HasValue)
             {
-                var menu = await _dbcontext.Menus.FindAsync(nullableMenuId.Value);
+                var menu = await _dbContext.Menus.FindAsync(nullableMenuId.Value);
                 if (menu != null && !menu.IsDeleted)
                 {
                     string menuName = menu.MenuName.ToLower();
@@ -189,7 +187,7 @@ namespace StudentProj.Infrastructure.Repositories
 
             if (anyAssigned)
             {
-                await _dbcontext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
                 await ClearRoleCacheAsync(roleId);
             }
 
@@ -198,7 +196,7 @@ namespace StudentProj.Infrastructure.Repositories
 
         public async Task<Permissions> CreatePermissionAsync(Permissions permission)
         {
-            var existing = await _dbcontext.Permissions
+            var existing = await _dbContext.Permissions.IgnoreQueryFilters()
                 .FirstOrDefaultAsync(p => p.PermissionName.ToLower() == permission.PermissionName.ToLower());
 
             if (existing != null)
@@ -207,39 +205,36 @@ namespace StudentProj.Infrastructure.Repositories
                 {
                     existing.IsDeleted = false;
                     existing.DeletedAt = null;
-                    _dbcontext.Permissions.Update(existing);
-                    await _dbcontext.SaveChangesAsync();
+                    _dbContext.Permissions.Update(existing);
+                    await _dbContext.SaveChangesAsync();
                 }
                 return existing;
             }
 
-            await _dbcontext.Permissions.AddAsync(permission);
-            await _dbcontext.SaveChangesAsync();
+            await _dbContext.Permissions.AddAsync(permission);
+            await _dbContext.SaveChangesAsync();
             return permission;
         }
 
         public async Task<List<Permissions>> GetAllPermissionAsync()
         {
-            return await _dbcontext.Permissions
-                .Where(p => !p.IsDeleted)
-                .ToListAsync();
+            var permissions = await base.GetAllAsync();
+            return permissions.ToList();
         }
 
         public async Task<Permissions?> GetPermissionByIdAsync(int id)
         {
-            return await _dbcontext.Permissions
-                           .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
+            return await base.GetAsync(p => p.Id == id);
         }
 
         public async Task<Permissions?> GetPermissionByNameAsync(string name)
         {
-            return await _dbcontext.Permissions
-                           .FirstOrDefaultAsync(p => p.PermissionName.ToLower() == name.ToLower() && !p.IsDeleted);
+            return await base.GetAsync(p => p.PermissionName.ToLower() == name.ToLower());
         }
 
         public async Task<List<string>> GetPermissionByRoleIdAsync(List<int> roleIds)
         {
-            return await _dbcontext.RolePermissions
+            return await _dbContext.RolePermissions
                            .Where(rp => roleIds.Contains(rp.RoleId)
                                         && !rp.IsDeleted
                                         && !rp.Role.IsDeleted
@@ -253,13 +248,13 @@ namespace StudentProj.Infrastructure.Repositories
 
         public async Task<bool> PermissionExistsAsync(string name)
         {
-            return await _dbcontext.Permissions
+            return await _dbContext.Permissions
                              .AnyAsync(p => p.PermissionName.ToLower() == name.ToLower() && !p.IsDeleted);
         }
 
         public async Task<List<string>> GetPermissionByRoleNamesAsync(List<string> roleNames)
         {
-            return await _dbcontext.RolePermissions
+            return await _dbContext.RolePermissions
                 .Where(rp => roleNames.Contains(rp.Role.RoleName)
                              && !rp.IsDeleted
                              && !rp.Role.IsDeleted
@@ -273,8 +268,8 @@ namespace StudentProj.Infrastructure.Repositories
 
         public async Task<bool> UpdatePermissionRoleAsync(int id, Permissions permission)
         {
-            _dbcontext.Permissions.Update(permission);
-            await _dbcontext.SaveChangesAsync();
+            _dbContext.Permissions.Update(permission);
+            await _dbContext.SaveChangesAsync();
             return permission.Id == id;
         }
 
@@ -284,15 +279,15 @@ namespace StudentProj.Infrastructure.Repositories
             if (permission == null) return false;
             permission.IsDeleted = true;
             permission.DeletedAt = DateTimeHelper.GetIndianStandardTime();
-            _dbcontext.Permissions.Update(permission);
-            await _dbcontext.SaveChangesAsync();
+            _dbContext.Permissions.Update(permission);
+            await _dbContext.SaveChangesAsync();
             return true;
         }
 
         // Extracted single remove logic
         private async Task<bool> RemoveSinglePermissionAsync(int roleId, int permissionId, int? menuId)
         {
-            var rolePermission = await _dbcontext.RolePermissions
+            var rolePermission = await _dbContext.RolePermissions
                 .FirstOrDefaultAsync(rp => rp.RoleId == roleId
                                         && rp.PermissionId == permissionId
                                         && rp.MenuId == menuId
@@ -301,7 +296,7 @@ namespace StudentProj.Infrastructure.Repositories
 
             rolePermission.IsDeleted = true;
             rolePermission.DeletedAt = DateTimeHelper.GetIndianStandardTime();
-            _dbcontext.RolePermissions.Update(rolePermission);
+            _dbContext.RolePermissions.Update(rolePermission);
             return true;
         }
 
@@ -317,7 +312,7 @@ namespace StudentProj.Infrastructure.Repositories
             // 2. Cascade Logic
             if (nullableMenuId.HasValue)
             {
-                var menu = await _dbcontext.Menus.FindAsync(nullableMenuId.Value);
+                var menu = await _dbContext.Menus.FindAsync(nullableMenuId.Value);
                 if (menu != null && !menu.IsDeleted)
                 {
                     string menuName = menu.MenuName.ToLower();
@@ -358,7 +353,7 @@ namespace StudentProj.Infrastructure.Repositories
 
             if (anyRevoked)
             {
-                await _dbcontext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
                 await ClearRoleCacheAsync(roleId);
             }
 

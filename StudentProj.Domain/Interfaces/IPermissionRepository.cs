@@ -2,7 +2,7 @@ using StudentProj.Domain.Entities;
 
 namespace StudentProj.Domain.Interfaces
 {
-    public interface IPermissionRepository
+    public interface IPermissionRepository : IGenericRepository<Permissions>
     {
         Task<bool> HasPermissionAsync(int userId, string action, string menuName);
         Task<List<Permissions>> GetAllPermissionAsync();

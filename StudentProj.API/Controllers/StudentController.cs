@@ -79,8 +79,7 @@ namespace StudentProj.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStudentId(int id)
         {
-            var userIdStr = User.FindFirst("Id")?.Value;
-            int? deletedBy = string.IsNullOrEmpty(userIdStr) ? (int?)null : int.Parse(userIdStr);
+            var deletedBy = User.FindFirst("Name")?.Value;
 
             var result = await _service.DeleteStudentasync(id, deletedBy);
             if (!result)

@@ -114,6 +114,13 @@ namespace StudentProj.Data
             modelBuilder.Entity<Student>().HasQueryFilter(e => !e.IsDeleted);
             modelBuilder.Entity<Enrollment>().HasQueryFilter(e => !e.IsDeleted);
             modelBuilder.Entity<Attendance>().HasQueryFilter(e => !e.IsDeleted);
+            
+            // Security/Auth Global Query Filters
+            modelBuilder.Entity<Roles>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<Permissions>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<Menu>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<StudentRoles>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<RolePermissions>().HasQueryFilter(e => !e.IsDeleted);
         }
     }
 }

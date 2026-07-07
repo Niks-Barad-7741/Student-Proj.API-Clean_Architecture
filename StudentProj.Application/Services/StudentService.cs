@@ -24,7 +24,7 @@ namespace StudentProj.Application.Services
             return await _repository.Createstudentasync(entity);
         }
 
-        public async Task<bool> DeleteStudentasync(int id, int? deletedBy = null)
+        public async Task<bool> DeleteStudentasync(int id, string? deletedBy = null)
         {
             var student = await _repository.GetStudentbyid(id);
             if (student == null)
