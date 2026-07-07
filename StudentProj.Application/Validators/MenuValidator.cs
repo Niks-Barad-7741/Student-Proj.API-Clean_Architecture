@@ -21,6 +21,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Menu name cannot be the default word 'string'.");
 
             RuleFor(x => x.MenuRoute)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotNull().WithMessage("Menu route cannot be null")
                 .NotEmpty().WithMessage("Menu route is required")
@@ -51,6 +52,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Menu name cannot be the default word 'string'.");
 
             RuleFor(x => x.MenuRoute)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotNull().WithMessage("Menu route cannot be null")
                 .NotEmpty().WithMessage("Menu route is required")
@@ -63,4 +65,5 @@ namespace StudentProj.Application.Validators
         }
     }
 }
+
 

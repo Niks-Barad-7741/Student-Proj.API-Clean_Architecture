@@ -20,6 +20,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Name cannot start or end with whitespace");
 
             RuleFor(x => x.Email)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Email is Required")
@@ -29,6 +30,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Email must be a valid Gmail address");
 
             RuleFor(x => x.Address)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Address is required")
@@ -38,6 +40,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Address Cannot Exceed 200 Characters");
 
             RuleFor(x => x.Phone)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Phone number is required")
@@ -49,4 +52,5 @@ namespace StudentProj.Application.Validators
         }
     }
 }
+
 

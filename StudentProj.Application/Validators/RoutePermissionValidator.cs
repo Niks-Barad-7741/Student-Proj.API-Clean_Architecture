@@ -18,6 +18,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("HTTP Method must be one of: GET, POST, PUT, PATCH, DELETE.");
 
             RuleFor(x => x.PathPattern)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty().WithMessage("Path Pattern is required!")
                 .NotNull().WithMessage("Path Pattern cannot be null!")
@@ -29,6 +30,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Path Pattern cannot be the default word '/api/string'.");
 
             RuleFor(x => x.RequiredMenuName)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty().WithMessage("Required Menu Name is required!")
                 .NotNull().WithMessage("Required Menu Name cannot be null!")
@@ -39,6 +41,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Cannot be the default word 'string'.");
 
             RuleFor(x => x.RequiredPermissionName)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty().WithMessage("Required Permission Name is required!")
                 .NotNull().WithMessage("Required Permission Name cannot be null!")
@@ -50,4 +53,5 @@ namespace StudentProj.Application.Validators
         }
     }
 }
+
 

@@ -12,6 +12,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Student Id must be greater than 0");
 
             RuleFor(x => x.RoleNames)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .NotEmpty()
                 .WithMessage("Role Names are required")
                 .Matches(@"^[A-Za-z0-9 ]+(?:,[A-Za-z0-9 ]+)*$")

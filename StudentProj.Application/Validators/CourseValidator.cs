@@ -22,6 +22,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Course Name cannot be the default word 'string'.");
 
             RuleFor(x => x.Description)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Description is required.")
@@ -51,6 +52,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("Course Name cannot be the default word 'string'.");
 
             RuleFor(x => x.Description)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .Must(x => x == null || !x.Equals("string", StringComparison.OrdinalIgnoreCase)).WithMessage("Default 'string' value is not allowed.")
                 .NotEmpty()
                 .WithMessage("Description is required.")
@@ -61,4 +63,5 @@ namespace StudentProj.Application.Validators
         }
     }
 }
+
 

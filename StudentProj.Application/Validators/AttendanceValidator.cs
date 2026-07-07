@@ -18,6 +18,7 @@ namespace StudentProj.Application.Validators
                 .WithMessage("SubjectId is required and must be valid.");
 
             RuleFor(x => x.Status)
+                .Must(x => x == null || x.Trim() == x).WithMessage("This field cannot contain leading or trailing spaces.")
                 .NotEmpty()
                 .WithMessage("Status is required.")
                 .Must(status => new[] { "Present", "Absent", "Late" }.Contains(status, StringComparer.OrdinalIgnoreCase))
@@ -29,3 +30,4 @@ namespace StudentProj.Application.Validators
         }
     }
 }
+
