@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using StudentProj.Application.Interfaces;
+using StudentProj.Domain.Interfaces;
 using StudentProj.Data; // Assuming this is where StudentDbcontext is based on user snippet
 using System.Linq.Expressions;
 
@@ -30,25 +30,42 @@ namespace StudentProj.Infrastructure.Repositories
             return true;
         }
 
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includes)
         {
-            return await _dbSet.ToListAsync();
+            IQueryable<T> query = _dbSet;
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+            return await query.ToListAsync();
         }
 
-        public virtual async Task<IEnumerable<T>> GetAllByFilterAsync(Expression<Func<T, bool>> filter, bool useNoTracking = false)
+        public virtual async Task<IEnumerable<T>> GetAllByFilterAsync(Expression<Func<T, bool>> filter, bool useNoTracking = false, params Expression<Func<T, object>>[] includes)
         {
+            IQueryable<T> query = _dbSet;
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
             if (useNoTracking)
-                return await _dbSet.AsNoTracking().Where(filter).ToListAsync();
+                return await query.AsNoTracking().Where(filter).ToListAsync();
             else
-                return await _dbSet.Where(filter).ToListAsync();
+                return await query.Where(filter).ToListAsync();
         }
 
-        public virtual async Task<T?> GetAsync(Expression<Func<T, bool>> filter, bool useNoTracking = false)
+        public virtual async Task<T?> GetAsync(Expression<Func<T, bool>> filter, bool useNoTracking = false, params Expression<Func<T, object>>[] includes)
         {
+            IQueryable<T> query = _dbSet;
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
             if (useNoTracking)
-                return await _dbSet.AsNoTracking().Where(filter).FirstOrDefaultAsync();
+                return await query.AsNoTracking().Where(filter).FirstOrDefaultAsync();
             else
-                return await _dbSet.Where(filter).FirstOrDefaultAsync();
+                return await query.Where(filter).FirstOrDefaultAsync();
         }
 
         public virtual async Task<T> UpdateAsync(T entity)

@@ -10,15 +10,19 @@ namespace StudentProj.Application.Services
     {
         private readonly IAttendenceRepository _repository;
         private readonly IStudent _studentRepository;
+        private readonly ISubjectRepository _subjectRepository;
         private readonly IMapper _mapper;
-        public AttendanceService(IAttendenceRepository repository, IStudent studentRepository, IMapper mapper)
+        public AttendanceService(IAttendenceRepository repository, IStudent studentRepository, ISubjectRepository subjectRepository, IMapper mapper)
         {
             _repository = repository;
             _studentRepository = studentRepository;
+            _subjectRepository = subjectRepository;
             _mapper = mapper;
         }
         public async Task<IEnumerable<AttendanceDTO>> GetBySubjectIdAsync(int subjectId, DateTime? date)
         {
+            var subject = await _subjectRepository.GetByIdAsync(subjectId);
+            if (subject == null) return null; // Indicate not found
             var entities = await _repository.GetBySubjectIdAsync(subjectId, date);
             return _mapper.Map<IEnumerable<AttendanceDTO>>(entities);
         }

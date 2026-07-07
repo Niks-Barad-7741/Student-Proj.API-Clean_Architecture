@@ -5,83 +5,57 @@ using StudentProj.Data;
 
 namespace StudentProj.Infrastructure.Repositories
 {
-    public class CourseRepository : ICourseRepository
+    public class CourseRepository : GenericRepository<Course>, ICourseRepository
     {
-        private readonly StudentDbcontext _dbcontext;
-
-        public CourseRepository(StudentDbcontext dbcontext)
+        public CourseRepository(StudentDbcontext dbcontext) : base(dbcontext)
         {
-            _dbcontext = dbcontext;
         }
 
         public async Task<Subject> AddSubjectAsync(int courseId, Subject entity)
         {
-            var course = await _dbcontext.Course.FirstOrDefaultAsync(n => n.Id == courseId && !n.isDeleted);
+            var course = await base.GetAsync(n => n.Id == courseId && !n.isDeleted);
             if (course == null) return null;
 
-            //var subject = _mapper.Map<Subject>(entity);
-            //subject.CourseId = courseId;
-            _dbcontext.Subject.Add(entity);
-            await _dbcontext.SaveChangesAsync();
-            return entity;
-        }
-
-        public async Task<Course> CreateAsync(Course entity)
-        {
-            //var course = _mapper.Map<Course>(dto);
-            _dbcontext.Course.Add(entity);
-            await _dbcontext.SaveChangesAsync();
+            _dbContext.Subject.Add(entity);
+            await _dbContext.SaveChangesAsync();
             return entity;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var course = await _dbcontext.Course.FirstOrDefaultAsync(n => n.Id == id && !n.isDeleted);
+            var course = await base.GetAsync(n => n.Id == id && !n.isDeleted);
             if (course == null) return false;
 
             course.isDeleted = true;
-            await _dbcontext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return true;
-
-        }
-
-        public async Task<IEnumerable<Course>> GetAllAsync()
-        {
-            var course = await _dbcontext.Course
-                .Where(n => !n.isDeleted)
-                .ToListAsync();
-            return course;
         }
 
         public async Task<Course> GetByIdAsync(int id)
         {
-            var course = await _dbcontext.Course
-                .FirstOrDefaultAsync(n => n.Id == id && !n.isDeleted);
-            if (course == null) return null;
-            return course;
-        }
-
-        public async Task<IEnumerable<Subject>> GetSubjectsAsync(int courseId)
-        {
-            var subject = await _dbcontext.Subject
-                .Where(n => n.CourseId == courseId && !n.IsDeleted)
-                .ToListAsync();
-            return subject;
+            return await base.GetAsync(n => n.Id == id && !n.isDeleted);
         }
 
         public async Task<Course?> UpdateAsync(int id, Course entity)
         {
-            var course = await _dbcontext.Course.FirstOrDefaultAsync(n => n.Id == id && !n.isDeleted);
+            var course = await base.GetAsync(n => n.Id == id && !n.isDeleted);
             if (course == null) return null;
-            _dbcontext.Course.Update(entity);
-            await _dbcontext.SaveChangesAsync();
+            
+            _dbContext.Course.Update(entity);
+            await _dbContext.SaveChangesAsync();
             return course;
         }
 
         public async Task<Course> GetByNameAsync(string courseName)
         {
-            return await _dbcontext.Course
-                .FirstOrDefaultAsync(c => c.CourseName.ToLower() == courseName.ToLower() && !c.isDeleted);
+            return await base.GetAsync(c => c.CourseName.ToLower() == courseName.ToLower() && !c.isDeleted);
+        }
+
+        public async Task<IEnumerable<Subject>> GetSubjectsAsync(int courseId)
+        {
+            return await _dbContext.Subject
+                .Where(n => n.CourseId == courseId && !n.IsDeleted)
+                .ToListAsync();
         }
     }
 }

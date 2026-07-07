@@ -3,6 +3,7 @@ using StudentProj.Application.DTOs;
 using StudentProj.Application.Interfaces;
 using StudentProj.Domain.Common;
 using StudentProj.Domain.Entities;
+using StudentProj.Domain.Interfaces;
 
 namespace StudentProj.Application.Services
 {

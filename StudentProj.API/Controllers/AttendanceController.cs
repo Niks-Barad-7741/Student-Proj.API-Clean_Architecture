@@ -35,6 +35,7 @@ namespace StudentProj.API.Controllers
         public async Task<IActionResult> GetBySubjectId(int subjectId, [FromQuery] DateTime? date)
         {
             var items = await _service.GetBySubjectIdAsync(subjectId, date);
+            if (items == null) return NotFound(ApiResponse<object>.Create(ResponseStatus.SubjectNotFound));
             var response = ApiResponse<IEnumerable<AttendanceDTO>>.Create(ResponseStatus.AttendanceRetriveSuccessfully, items);
             return StatusCode(response.StatusCodes, response);
         }

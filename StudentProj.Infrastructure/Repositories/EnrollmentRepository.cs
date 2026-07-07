@@ -6,23 +6,20 @@ using StudentProj.Data;
 
 namespace StudentProj.Infrastructure.Repositories
 {
-    public class EnrollmentRepository : IEnrollmentRepository
+    public class EnrollmentRepository : GenericRepository<Enrollment>, IEnrollmentRepository
     {
-        private readonly StudentDbcontext _dbcontext;
-        
-        public EnrollmentRepository(StudentDbcontext dbcontext)
+        public EnrollmentRepository(StudentDbcontext dbcontext) : base(dbcontext)
         {
-            _dbcontext = dbcontext;
         }
         public async Task<Enrollment> EnrollStudentAsync(Enrollment enrollment)
         {
-            var studentExists = await _dbcontext.Student.AnyAsync(s => s.Id == enrollment.StudentId && !s.IsDeleted);
+            var studentExists = await _dbContext.Student.AnyAsync(s => s.Id == enrollment.StudentId && !s.IsDeleted);
             if (!studentExists) return null;
 
-            var courseExists = await _dbcontext.Course.AnyAsync(c => c.Id == enrollment.CourseId && !c.isDeleted);
+            var courseExists = await _dbContext.Course.AnyAsync(c => c.Id == enrollment.CourseId && !c.isDeleted);
             if (!courseExists) return null;
 
-            var check = await _dbcontext.Enrollment
+            var check = await _dbContext.Enrollment
                 .AnyAsync(n => n.StudentId == enrollment.StudentId
                 && n.CourseId == enrollment.CourseId
                 && !n.IsDeleted);
@@ -33,10 +30,10 @@ namespace StudentProj.Infrastructure.Repositories
             //var enrollment = _mapper.Map<Enrollment>(dto);
 
             enrollment.EnrolledAt = DateTimeHelper.GetIndianStandardTime();
-            _dbcontext.Enrollment.Add(enrollment);
-            await _dbcontext.SaveChangesAsync();
+            _dbContext.Enrollment.Add(enrollment);
+            await _dbContext.SaveChangesAsync();
 
-            var created = await _dbcontext.Enrollment
+            var created = await _dbContext.Enrollment
                 .Include(n => n.Student)
                 .Include(n => n.Course)
                 .FirstOrDefaultAsync(n => n.Id == enrollment.Id);
@@ -46,7 +43,7 @@ namespace StudentProj.Infrastructure.Repositories
 
         public async Task<IEnumerable<Enrollment>> GetStudentByIdAsync(int studentId)
         {
-            var enrollment = await _dbcontext.Enrollment
+            var enrollment = await _dbContext.Enrollment
                 .Include(n => n.Student)
                 .Include(n => n.Course)
                 .Where(n => n.StudentId == studentId && !n.IsDeleted)
@@ -56,7 +53,7 @@ namespace StudentProj.Infrastructure.Repositories
 
         public async Task<Enrollment> UpdateGradeAsync(int id, Enrollment enrollment)
         {
-            var enrollmentcheck = await _dbcontext.Enrollment
+            var enrollmentcheck = await _dbContext.Enrollment
                 .Include(n => n.Student)
                 .Include(n => n.Course)
                 .FirstOrDefaultAsync(n => n.Id == id && !n.IsDeleted);
@@ -65,7 +62,7 @@ namespace StudentProj.Infrastructure.Repositories
                 return null;
             }
             enrollmentcheck.Grade = enrollment.Grade;
-            await _dbcontext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return enrollmentcheck;
         }
     }

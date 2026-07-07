@@ -2,7 +2,7 @@ using StudentProj.Domain.Entities;
 
 namespace StudentProj.Domain.Interfaces
 {
-    public interface IEnrollmentRepository
+    public interface IEnrollmentRepository : IGenericRepository<Enrollment>
     {
         Task<Enrollment> EnrollStudentAsync(Enrollment enrollment);
         Task<IEnumerable<Enrollment>> GetStudentByIdAsync(int studentId);

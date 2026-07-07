@@ -24,14 +24,14 @@ namespace StudentProj.Application.Services
             return await _repository.Createstudentasync(entity);
         }
 
-        public async Task<bool> DeleteStudentasync(int id)
+        public async Task<bool> DeleteStudentasync(int id, int? deletedBy = null)
         {
             var student = await _repository.GetStudentbyid(id);
             if (student == null)
             {
                 return false;
             }
-            return await _repository.DeleteStudentasync(student);
+            return await _repository.DeleteStudentasync(student, deletedBy);
         }
 
         public async Task<List<StudentDTO>> GetAllStudentsasync()
@@ -52,10 +52,10 @@ namespace StudentProj.Application.Services
             return _mapper.Map<StudentDTO>(entity);
         }
 
-        public async Task<StudentDTO> Getstudentbynameasync(string name)
+        public async Task<IEnumerable<StudentDTO>> Getstudentbynameasync(string name)
         {
-            var entity = await _repository.Getstudentbynameasync(name);
-            return _mapper.Map<StudentDTO>(entity);
+            var entities = await _repository.Getstudentbynameasync(name);
+            return _mapper.Map<IEnumerable<StudentDTO>>(entities);
         }
 
         public async Task<(bool Success, string Error)> UpdateStudentasync(int id, StudentDTO dto)

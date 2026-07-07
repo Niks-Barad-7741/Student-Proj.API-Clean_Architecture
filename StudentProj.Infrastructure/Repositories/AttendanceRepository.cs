@@ -6,20 +6,15 @@ using StudentProj.Data;
 
 namespace StudentProj.Infrastructure.Repositories
 {
-    public class AttendanceRepository : IAttendenceRepository
+    public class AttendanceRepository : GenericRepository<Attendance>, IAttendenceRepository
     {
-        private readonly StudentDbcontext _dbcontext;
-        //private readonly IMapper _mapper;
-
-        public AttendanceRepository(StudentDbcontext dbcontext)
+        public AttendanceRepository(StudentDbcontext dbcontext) : base(dbcontext)
         {
-            _dbcontext = dbcontext;
-            //_mapper = mapper;
         }
 
         public async Task<IEnumerable<Attendance>> GetBySubjectIdAsync(int subjectId, DateTime? date)
         {
-            var attendance = await _dbcontext.Attendance
+            var attendance = await _dbContext.Attendance
             .Include(n => n.Student)
             .Include(n => n.Subject)
             .Where(n =>
@@ -36,13 +31,13 @@ namespace StudentProj.Infrastructure.Repositories
 
         public async Task<IEnumerable<Attendance>> GetRecordAsync(int studentId)
         {
-            var student = await _dbcontext.Student.FirstOrDefaultAsync(n => n.Id == studentId && !n.IsDeleted);
+            var student = await _dbContext.Student.FirstOrDefaultAsync(n => n.Id == studentId && !n.IsDeleted);
             if (student == null)
             {
                 return null;
             }
 
-            var records = await _dbcontext.Attendance
+            var records = await _dbContext.Attendance
                 .Where(n => n.StudentId == studentId && !n.IsDeleted)
                 .ToListAsync();
 
@@ -52,7 +47,7 @@ namespace StudentProj.Infrastructure.Repositories
 
         public async Task<Attendance> RecordAsync(Attendance entity)
         {
-            var subject = await _dbcontext.Subject
+            var subject = await _dbContext.Subject
                 .FirstOrDefaultAsync(n => n.Id == entity.SubjectId && !n.IsDeleted);
 
             if (subject == null)
@@ -60,7 +55,7 @@ namespace StudentProj.Infrastructure.Repositories
                 return null;
             }
 
-            var student = await _dbcontext.Student
+            var student = await _dbContext.Student
                 .FirstOrDefaultAsync(n => n.Id == entity.StudentId && !n.IsDeleted);
 
             if (student == null)
@@ -68,7 +63,7 @@ namespace StudentProj.Infrastructure.Repositories
                 return null;
             }
 
-            var exists = await _dbcontext.Attendance
+            var exists = await _dbContext.Attendance
                 .FirstOrDefaultAsync(n => n.StudentId == entity.StudentId
                 && n.SubjectId == entity.SubjectId
                 && n.Date.Date == entity.Date.Date
@@ -78,9 +73,9 @@ namespace StudentProj.Infrastructure.Repositories
             {
                 exists.Status = entity.Status;
 
-                await _dbcontext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
 
-                var updated = await _dbcontext.Attendance
+                var updated = await _dbContext.Attendance
                     .Include(n => n.Student)
                     .Include(n => n.Subject)
                     .FirstOrDefaultAsync(n => n.Id == exists.Id);
@@ -92,10 +87,10 @@ namespace StudentProj.Infrastructure.Repositories
             //attendance.Date = DateTimeHelper.GetIndianStandardTime();
             entity.Date = DateTimeHelper.GetIndianStandardTime();
 
-            _dbcontext.Attendance.Add(entity);
-            await _dbcontext.SaveChangesAsync();
+            _dbContext.Attendance.Add(entity);
+            await _dbContext.SaveChangesAsync();
 
-            var created = await _dbcontext.Attendance
+            var created = await _dbContext.Attendance
                 .Include(n => n.Student)
                 .Include(n => n.Subject)
                 .FirstOrDefaultAsync(n => n.Id == entity.Id);

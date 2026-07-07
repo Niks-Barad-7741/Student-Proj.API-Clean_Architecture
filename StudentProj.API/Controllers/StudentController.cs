@@ -58,13 +58,8 @@ namespace StudentProj.API.Controllers
         [HttpGet("by-name/{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
-            var student = await _service.Getstudentbynameasync(name);
-            if (student == null)
-            {
-                var bad = ApiResponse<object>.Create(ResponseStatus.UserNotFound);
-                return StatusCode(bad.StatusCodes, bad);
-            }
-            var response = ApiResponse<object>.Create(ResponseStatus.UserRetriveSuccessfully, student);
+            var students = await _service.Getstudentbynameasync(name);
+            var response = ApiResponse<object>.Create(ResponseStatus.UserRetriveSuccessfully, students);
             return StatusCode(response.StatusCodes, response);
         }
 
@@ -84,7 +79,10 @@ namespace StudentProj.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStudentId(int id)
         {
-            var result = await _service.DeleteStudentasync(id);
+            var userIdStr = User.FindFirst("Id")?.Value;
+            int? deletedBy = string.IsNullOrEmpty(userIdStr) ? (int?)null : int.Parse(userIdStr);
+
+            var result = await _service.DeleteStudentasync(id, deletedBy);
             if (!result)
             {
                 var bad = ApiResponse<object>.Create(ResponseStatus.BadRequest, "Failed to delete student");
@@ -94,13 +92,9 @@ namespace StudentProj.API.Controllers
             return StatusCode(response.StatusCodes, response);
         }
 
-        [HttpPut("upsert/{id?}")]
-        public async Task<IActionResult> UpsertStudent(int? id, [FromBody] StudentDTO dto)
+        [HttpPut("upsert")]
+        public async Task<IActionResult> UpsertStudent([FromBody] StudentDTO dto)
         {
-            if (id.HasValue && id.Value > 0)
-            {
-                dto.Id = id.Value;
-            }
             var newId = await _service.UpsertStudentAsync(dto);
             var response = ApiResponse<object>.SuccessResponse(newId, "Student upserted successfully");
             return StatusCode(response.StatusCodes, response);

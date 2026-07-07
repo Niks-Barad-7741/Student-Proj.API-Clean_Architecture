@@ -2,7 +2,7 @@ using StudentProj.Domain.Entities;
 
 namespace StudentProj.Domain.Interfaces
 {
-    public interface IAttendenceRepository
+    public interface IAttendenceRepository : IGenericRepository<Attendance>
     {
         Task<Attendance> RecordAsync(Attendance entity);
         Task<IEnumerable<Attendance>> GetBySubjectIdAsync(int subjectId, DateTime? date);

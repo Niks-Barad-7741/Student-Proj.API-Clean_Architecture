@@ -5,17 +5,15 @@ using StudentProj.Data;
 
 namespace StudentProj.Infrastructure.Repositories
 {
-    public class SubjectRepository : ISubjectRepository
+    public class SubjectRepository : GenericRepository<Subject>, ISubjectRepository
     {
-        private readonly StudentDbcontext _dbcontext;
-
-        public SubjectRepository(StudentDbcontext dbcontext)
+        public SubjectRepository(StudentDbcontext dbcontext) : base(dbcontext)
         {
-            _dbcontext = dbcontext;
         }
-        public async Task<Subject> CreateAsync(Subject subject)
+
+        public override async Task<Subject> CreateAsync(Subject subject)
         {
-            var course = await _dbcontext.Course
+            var course = await _dbContext.Course
                 .FirstOrDefaultAsync(n => n.Id == subject.CourseId && !n.isDeleted);
 
             if (course == null)
@@ -23,71 +21,54 @@ namespace StudentProj.Infrastructure.Repositories
                 return null;
             }
 
-            var existe = await _dbcontext.Subject
+            var existe = await _dbContext.Subject
                 .FirstOrDefaultAsync(n => n.SubjectCode == subject.SubjectCode && n.CourseId == subject.CourseId && !n.IsDeleted);
 
             if (existe != null)
             {
                 return null;
             }
-
            
-            await _dbcontext.Subject.AddAsync(subject);
-            await _dbcontext.SaveChangesAsync();
+            await _dbContext.Subject.AddAsync(subject);
+            await _dbContext.SaveChangesAsync();
 
             return subject;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var subject = await _dbcontext.Subject
-                .Where(n => n.Id == id && !n.IsDeleted)
-                .FirstOrDefaultAsync();
+            var subject = await base.GetAsync(n => n.Id == id && !n.IsDeleted);
             if (subject == null)
             {
                 return false;
             }
             subject.IsDeleted = true;
-            await _dbcontext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return true;
         }
 
-        public async Task<IEnumerable<Subject>> GetAllAsync()
+        public async Task<Subject?> GetByIdAsync(int id)
         {
-            var subjects = await _dbcontext.Subject
-                .Where(n => !n.IsDeleted)
-                .ToListAsync();
-            return subjects;
+            return await base.GetAsync(n => n.Id == id && !n.IsDeleted);
         }
 
-        public async Task<Subject> GetByIdAsync(int id)
+        public async Task<Subject?> UpdateAsync(int id, Subject subject)
         {
-            var subject = await _dbcontext.Subject
-                .Where(n => n.Id == id && !n.IsDeleted)
-                .FirstOrDefaultAsync();
-            return subject;
-        }
-
-        public async Task<Subject> UpdateAsync(int id, Subject subject)
-        {
-            var course = await _dbcontext.Course
+            var course = await _dbContext.Course
                 .AnyAsync(n => n.Id == subject.CourseId && !n.isDeleted);
             if (!course)
             {
                 return null;
             }
 
-            var ExistingSubject = await _dbcontext.Subject
-                .AsNoTracking()
-                .Where(n => n.Id == id && !n.IsDeleted)
-                .FirstOrDefaultAsync();
+            var ExistingSubject = await base.GetAsync(n => n.Id == id && !n.IsDeleted, true);
             if (ExistingSubject == null)
             {
                 return null;
             }
 
             // Check SubjectCode uniqueness within the same course (exclude current subject)
-            var duplicateCode = await _dbcontext.Subject
+            var duplicateCode = await _dbContext.Subject
                 .AnyAsync(n => n.SubjectCode == subject.SubjectCode
                     && n.CourseId == subject.CourseId
                     && n.Id != id
@@ -97,8 +78,8 @@ namespace StudentProj.Infrastructure.Repositories
                 return null;
             }
 
-            _dbcontext.Update(subject);
-            await _dbcontext.SaveChangesAsync();
+            _dbContext.Update(subject);
+            await _dbContext.SaveChangesAsync();
             return subject;
         }
     }

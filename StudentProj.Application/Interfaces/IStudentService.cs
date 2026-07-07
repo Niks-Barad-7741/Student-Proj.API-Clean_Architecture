@@ -9,9 +9,9 @@ namespace StudentProj.Application.Interfaces
         Task<StudentDTO> GetStudentbyid(int id);
         Task<int> Createstudentasync(RegisterDTO dto);
         Task<(bool Success, string Error)> UpdateStudentasync(int id, StudentDTO dto);
-        Task<StudentDTO> Getstudentbynameasync(string name);
+        Task<IEnumerable<StudentDTO>> Getstudentbynameasync(string name);
         Task<StudentDTO> GetStudentbyemailasync(string email);
-        Task<bool> DeleteStudentasync(int id);
+        Task<bool> DeleteStudentasync(int id, int? deletedBy = null);
         Task<int> UpsertStudentAsync(StudentDTO student);
 
     }

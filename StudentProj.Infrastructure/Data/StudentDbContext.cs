@@ -106,6 +106,14 @@ namespace StudentProj.Data
                 .HasIndex(s => new { s.SubjectCode, s.CourseId })
                 .HasFilter("IsDeleted = 0")
                 .IsUnique();
+
+            // ===== Global Query Filters (Soft Delete) =====
+            // These ensure that GenericRepository and all queries automatically ignore deleted records.
+            modelBuilder.Entity<Subject>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<Course>().HasQueryFilter(e => !e.isDeleted);
+            modelBuilder.Entity<Student>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<Enrollment>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<Attendance>().HasQueryFilter(e => !e.IsDeleted);
         }
     }
 }
