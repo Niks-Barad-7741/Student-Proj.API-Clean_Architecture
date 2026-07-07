@@ -14,6 +14,7 @@ namespace StudentProj.Application
         public static IServiceCollection AddApplicationDI(this IServiceCollection services) 
         {
             services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<ISubjectService, SubjectService>();
             services.AddScoped<IAttendanceService, AttendanceService>();
@@ -49,6 +50,8 @@ namespace StudentProj.Application
             services.AddScoped<IValidator<RecordAttendanceDTO>, AttendanceValidator>();
             services.AddScoped<IValidator<EnrollStudentDTO>, EnrollmentValidator>();
             services.AddScoped<IValidator<UpdateGradeDTO>, UpdateGradeValidator>();
+            services.AddScoped<IValidator<CreateDepartmentDTO>, CreateDepartmentValidator>();
+            services.AddScoped<IValidator<UpdateDepartmentDTO>, UpdateDepartmentValidator>();
             
             services.AddAutoMapper(cfg => cfg.AddProfile<StudentProj.Application.Mappings.MappingProfile>());
             return services;

@@ -66,17 +66,30 @@ namespace StudentProj.API.Controllers
 
             var pNames = dto.PermissionNames.Split(',');
             var notFound = new List<string>();
+            bool anyAssigned = false;
+
             foreach (var pName in pNames)
             {
                 var perm = await _service.GetPermissionByNameAsync(pName.Trim());
                 if (perm != null)
-                    await _service.AssignPermissionToRoleAsync(role.Id, perm.Id, menu.Id);
+                {
+                    bool assigned = await _service.AssignPermissionToRoleAsync(role.Id, perm.Id, menu.Id);
+                    if (assigned) anyAssigned = true;
+                }
                 else
+                {
                     notFound.Add(pName.Trim());
+                }
             }
 
             if (notFound.Count == pNames.Length)
                 return BadRequest(ApiResponse<object>.Create(ResponseStatus.BadRequest, $"None of the permissions were found: {string.Join(", ", notFound)}"));
+
+            if (!anyAssigned && notFound.Count == 0)
+            {
+                var conflictResponse = ApiResponse<object>.FailureResponse("All specified permissions are already assigned to this role for this menu.", 409);
+                return StatusCode(conflictResponse.StatusCodes, conflictResponse);
+            }
 
             var response = ApiResponse<object>.Create(ResponseStatus.PermissionAssignedSuccessfully);
             return StatusCode(response.StatusCodes, response);
@@ -111,18 +124,32 @@ namespace StudentProj.API.Controllers
 
             var pNames = dto.PermissionNames.Split(',');
             var notFound = new List<string>();
+            bool anyRevoked = false;
+
             foreach (var pName in pNames)
             {
                 var perm = await _service.GetPermissionByNameAsync(pName.Trim());
                 if (perm != null)
-                    await _service.RemovePermissionFromRoleAsync(role.Id, perm.Id, menu.Id);
+                {
+                    bool revoked = await _service.RemovePermissionFromRoleAsync(role.Id, perm.Id, menu.Id);
+                    if (revoked) anyRevoked = true;
+                }
                 else
+                {
                     notFound.Add(pName.Trim());
+                }
             }
 
             if (notFound.Count == pNames.Length)
                 return BadRequest(ApiResponse<object>.Create(ResponseStatus.BadRequest, $"None of the permissions were found: {string.Join(", ", notFound)}"));
-            var response = ApiResponse<object>.Create(ResponseStatus.PermissionAssignedSuccessfully);
+            
+            if (!anyRevoked && notFound.Count == 0)
+            {
+                var conflictResponse = ApiResponse<object>.FailureResponse("All specified permissions are not assigned to this role for this menu, or are already revoked.", 409);
+                return StatusCode(conflictResponse.StatusCodes, conflictResponse);
+            }
+
+            var response = ApiResponse<object>.SuccessResponse(true, "Permission Revoked Successfully");
             return StatusCode(response.StatusCodes, response);
         }
     }

@@ -19,6 +19,8 @@ namespace StudentProj.Infrastructure
                     configuration.GetConnectionString("StudentProj-clean"),
                     b => b.MigrationsAssembly("StudentProj.Infrastructure")));
 
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            
             services.AddScoped<IStudent, StudentRepository>(); // I recommend renaming IStudent to IStudentRepository eventually!
             services.AddScoped<ICourseRepository, CourseRepository>();
             services.AddScoped<ISubjectRepository, SubjectRepository>();

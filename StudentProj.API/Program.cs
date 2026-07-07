@@ -46,6 +46,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = async context =>
+            {
+                context.HandleResponse();
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+                
+                var response = StudentProj.DTO.ApiResponse<object>.Create(StudentProj.Domain.Enums.ResponseStatus.Unauthorized);
+                await context.Response.WriteAsJsonAsync(response);
+            }
+        };
     });
 
 builder.Services.AddControllers()

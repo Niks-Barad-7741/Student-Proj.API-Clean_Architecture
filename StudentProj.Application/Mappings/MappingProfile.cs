@@ -52,6 +52,11 @@ namespace StudentProj.Application.Mappings
 
             //Logs Mapping
             CreateMap<Logs, LogResponseDTO>();
+
+            //Department Mapping
+            CreateMap<Department, DepartmentDTO>().ReverseMap();
+            CreateMap<CreateDepartmentDTO, Department>();
+            CreateMap<UpdateDepartmentDTO, Department>();
         }
     }
 }

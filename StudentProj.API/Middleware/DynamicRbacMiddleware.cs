@@ -40,7 +40,9 @@ namespace StudentProj.API.Middleware
             if (context.User.Identity?.IsAuthenticated != true)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                await context.Response.WriteAsJsonAsync(new { message = "Unauthorized access." });
+                context.Response.ContentType = "application/json";
+                var unauthorizedResponse = StudentProj.DTO.ApiResponse<object>.Create(StudentProj.Domain.Enums.ResponseStatus.Unauthorized);
+                await context.Response.WriteAsJsonAsync(unauthorizedResponse);
                 return;
             }
             if (context.User.IsInRole("Super Admin"))
@@ -92,8 +94,11 @@ namespace StudentProj.API.Middleware
                 var name = context.User.FindFirst("Name")?.Value ?? context.User.Identity?.Name;
                 var email = context.User.FindFirst("Email")?.Value ?? context.User.FindFirst(ClaimTypes.Email)?.Value;
                 await loggingService.LogActivityAsync(name, email, $"Forbidden - Required: {requiredPermission} on {requiredMenu}", context);
+                
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                await context.Response.WriteAsJsonAsync(new { message = $"Forbidden. Required permission: {requiredPermission} on {requiredMenu}." });
+                context.Response.ContentType = "application/json";
+                var forbiddenResponse = StudentProj.DTO.ApiResponse<object>.Create(StudentProj.Domain.Enums.ResponseStatus.Forbidden, $"Forbidden. Required permission: {requiredPermission} on {requiredMenu}.");
+                await context.Response.WriteAsJsonAsync(forbiddenResponse);
                 return;
             }
             await _next(context);
