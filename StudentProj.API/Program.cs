@@ -9,7 +9,7 @@ using StudentProj.Infrastructure;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
+    
 // Generate a unique log file name for this specific application run
 string logFileName = $"Logs/log-{DateTime.Now:yyyyMMdd_HHmmss}.txt";
 

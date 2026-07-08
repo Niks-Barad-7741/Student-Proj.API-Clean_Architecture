@@ -147,8 +147,8 @@ namespace StudentProj.API.Controllers
             return StatusCode(response.StatusCodes, response);
         }
 
-        [HttpPost("forgot-password")]
-        public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordDTO dto)
+        [HttpPost("forgot-password/{email}")]
+        public async Task<ActionResult> ForgotPassword([FromRoute] string email)
         {
             var ipaddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "user";
             
@@ -161,14 +161,14 @@ namespace StudentProj.API.Controllers
             }
 
             // Layer 2: Email Rate Limit (5 per 1 hour)
-            string emailKey = $"otp_limit:email:{dto.Email.Trim().ToLower()}";
+            string emailKey = $"otp_limit:email:{email.Trim().ToLower()}";
             if (!await IsRateLimitAllowedAsync(emailKey, 5))
             {
                 var errorResponse = ApiResponse<object>.Create(ResponseStatus.BadRequest, "Too Many OTP from This Email, Please Try again in After 1 Hour");
                 return StatusCode(429, errorResponse);
             }
 
-            var student = await _login.GetStudentbyemailasync(dto.Email);
+            var student = await _login.GetStudentbyemailasync(email);
             if (student == null)
             {
                 var errorResponse = ApiResponse<object>.Create(ResponseStatus.UserNotFound, "User not found with that email.");
@@ -209,7 +209,7 @@ namespace StudentProj.API.Controllers
                     Body = $"Your 6-digit OTP for password reset is: <b>{otp}</b><br/><br/>This code expires in 1 minute.",
                     IsBodyHtml = true
                 };
-                mailMessage.To.Add(dto.Email);
+                mailMessage.To.Add(email);
                 await client.SendMailAsync(mailMessage);
             }
             catch (Exception ex)
@@ -222,10 +222,10 @@ namespace StudentProj.API.Controllers
             return StatusCode(response.StatusCodes, response);
         }
 
-        [HttpPost("reset-password")]
-        public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordDTO dto)
+        [HttpPost("reset-password/{email}")]
+        public async Task<ActionResult> ResetPassword([FromRoute] string email, [FromBody] ResetPasswordDTO dto)
         {
-            var student = await _login.GetStudentbyemailasync(dto.Email);
+            var student = await _login.GetStudentbyemailasync(email);
             if (student == null)
             {
                 var errorResponse = ApiResponse<object>.Create(ResponseStatus.UserNotFound, "User not found with that email.");
