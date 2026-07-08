@@ -28,6 +28,7 @@ Thumbs.db
 *.env
 appsettings.Development.json
 appsettings.Local.json
+appsettings.json
 
 # Logs
 *.log
