@@ -121,6 +121,17 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularPolicy", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -134,6 +145,7 @@ app.UseMiddleware<StudentProj.API.Middleware.GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
+app.UseCors("AngularPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
